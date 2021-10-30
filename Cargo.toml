@@ -1,5 +1,11 @@
 [package]
+authors = ["Ben Gale <bengale2007@googlemail.com>"]
 name = "cli-diary"
+categories = ["command-line-utilities"]
+description = "A CLI based diary tool for adding entries on the fly."
+keywords = ["diary"]
+readme = "./README.md"
+repository = "https://github.com/BenGale93/cli-diary"
 version = "0.1.0"
 edition = "2018"
 
