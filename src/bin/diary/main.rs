@@ -2,7 +2,8 @@ mod cli;
 mod commands;
 
 fn main() {
-    if let Err(code) = cli::main() {
-        std::process::exit(code.exit_code);
+    if let Err(error) = cli::main() {
+        println!("{}", error.error.unwrap());
+        std::process::exit(error.exit_code);
     }
 }

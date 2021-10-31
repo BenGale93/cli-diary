@@ -8,6 +8,8 @@ extern crate serde;
 mod config;
 mod errors;
 
+pub mod ops;
+
 pub type CliResult = Result<(), errors::CliError>;
 
 pub use config::Config;

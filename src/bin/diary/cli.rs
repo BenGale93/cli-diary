@@ -18,7 +18,6 @@ pub fn main() -> CliResult {
     };
 
     let config = confy::load("diary")?;
-    println!("{:#?}", config);
     execute_subcommand(config, cmd, subcommand_args)
 }
 

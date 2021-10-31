@@ -1,3 +1,5 @@
+use std::{error, fmt};
+
 pub struct CliError {
     pub error: Option<anyhow::Error>,
     pub exit_code: i32,
@@ -37,3 +39,21 @@ impl From<confy::ConfyError> for CliError {
         CliError::new(err.into(), 101)
     }
 }
+impl From<DiaryError> for CliError {
+    fn from(err: DiaryError) -> CliError {
+        CliError::new(err.into(), 202)
+    }
+}
+
+#[derive(Debug)]
+pub struct DiaryError {
+    pub desc: String,
+}
+
+impl fmt::Display for DiaryError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.desc.fmt(f)
+    }
+}
+
+impl error::Error for DiaryError {}
