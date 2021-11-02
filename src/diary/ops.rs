@@ -1,4 +1,4 @@
-use std::{fs::canonicalize, fs::create_dir, io::ErrorKind, path::PathBuf};
+use std::{fs::canonicalize, fs::create_dir_all, io::ErrorKind, path::PathBuf};
 
 use crate::{errors::DiaryError, Config};
 
@@ -13,12 +13,11 @@ pub fn init(opts: InitOptions, config: &Config) -> Result<(), DiaryError> {
                 desc: String::from("Diary folder already exists somewhere."),
             });
         } else {
-            create_dir(&config.diary_path).unwrap();
+            create_dir_all(&config.diary_path).unwrap();
         }
     } else {
-        let mut diary_path = opts.path;
-        diary_path.push("diary");
-        if let Err(e) = create_dir(&diary_path) {
+        let diary_path = opts.path.join("diary");
+        if let Err(e) = create_dir_all(&diary_path) {
             if e.kind() == ErrorKind::AlreadyExists {
                 return Err(DiaryError {
                     desc: String::from("Diary folder already exists here."),
@@ -33,4 +32,25 @@ pub fn init(opts: InitOptions, config: &Config) -> Result<(), DiaryError> {
         confy::store("diary", new_cfg).unwrap();
     };
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use tempfile::tempdir;
+
+    use crate::Config;
+
+    use super::{init, InitOptions};
+
+    #[test]
+    fn blank_config_valid_path() {
+        let dir = tempdir().unwrap().path().to_path_buf();
+        let diary_dir = dir.join("diary");
+        let opts = InitOptions { path: dir };
+        let config = Config::default();
+
+        init(opts, &config).unwrap();
+
+        assert!(diary_dir.exists());
+    }
 }

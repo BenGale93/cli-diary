@@ -91,6 +91,7 @@ dependencies = [
  "edit",
  "serde",
  "serde_derive",
+ "tempfile",
 ]
 
 [[package]]
