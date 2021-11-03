@@ -31,23 +31,30 @@ fn establish_path(opts: &InitOptions, config: &Config) -> InitStatus {
 
 pub fn init(opts: InitOptions, config: &Config) -> Result<PathBuf, DiaryError> {
     let init_status = establish_path(&opts, config);
-    match init_status {
-        InitStatus::ExistsElsewhere => Err(DiaryError {
-            desc: String::from("Diary folder already exists somewhere."),
-        }),
-        InitStatus::ExistsHere => Err(DiaryError {
-            desc: String::from("Diary folder already exists at the path provided."),
-        }),
+    let path = match init_status {
+        InitStatus::ExistsElsewhere => {
+            return Err(DiaryError {
+                desc: String::from("Diary folder already exists somewhere."),
+            });
+        }
+        InitStatus::ExistsHere => {
+            return Err(DiaryError {
+                desc: String::from("Diary folder already exists at the path provided."),
+            });
+        }
         InitStatus::UseConfig(path) => {
             print!("It appears the config file already has a diary path set. ");
             println!("Creating a diary folder here: {:?}", path);
-            create_dir_all(&path).unwrap();
-            Ok(path)
+            path
         }
         InitStatus::UseOpt(path) => {
-            create_dir_all(&path).unwrap();
-            Ok(path)
+            println!("Creating a diary folder.");
+            path
         }
+    };
+    match create_dir_all(&path) {
+        Ok(_) => Ok(path),
+        Err(e) => Err(DiaryError::from(e)),
     }
 }
 

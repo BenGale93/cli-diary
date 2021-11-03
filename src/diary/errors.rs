@@ -49,10 +49,22 @@ impl From<DiaryError> for CliError {
 pub struct DiaryError {
     pub desc: String,
 }
+impl DiaryError {
+    fn new(msg: &str) -> DiaryError {
+        DiaryError {
+            desc: msg.to_string(),
+        }
+    }
+}
 
 impl fmt::Display for DiaryError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.desc.fmt(f)
+    }
+}
+impl From<std::io::Error> for DiaryError {
+    fn from(err: std::io::Error) -> Self {
+        DiaryError::new(&err.to_string())
     }
 }
 
