@@ -1,4 +1,4 @@
-use std::{fs::canonicalize, path::PathBuf};
+use std::path::PathBuf;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -7,7 +7,6 @@ pub struct Config {
 
 impl Config {
     pub fn new(diary_path: PathBuf) -> Self {
-        let diary_path = canonicalize(diary_path).unwrap();
         Config { diary_path }
     }
 }

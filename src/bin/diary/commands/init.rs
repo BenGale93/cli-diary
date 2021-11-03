@@ -1,4 +1,5 @@
 extern crate clap;
+use std::fs::canonicalize;
 use std::path::PathBuf;
 
 use clap::{App, Arg, ArgMatches, SubCommand};
@@ -20,7 +21,7 @@ fn args_to_init_ops(args: &ArgMatches<'_>) -> init::InitOptions {
 pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_init_ops(args);
     let path = init::init(opts, &config)?;
-    let new_cfg = Config::new(path);
+    let new_cfg = Config::new(canonicalize(path).unwrap());
     confy::store("diary", new_cfg)?;
     println!("Ran init command");
     Ok(())
