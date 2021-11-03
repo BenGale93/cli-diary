@@ -1,5 +1,5 @@
 use clap::{App, ArgMatches};
-use diary::{CliResult, Config};
+use diary::{errors, CliResult, Config};
 
 use crate::commands;
 
@@ -26,6 +26,9 @@ fn cli() -> App<'static, 'static> {
 }
 
 fn execute_subcommand(config: Config, cmd: &str, subcommand_args: &ArgMatches<'_>) -> CliResult {
-    let exec = commands::builtin_exec(cmd);
-    exec.unwrap()(config, subcommand_args)
+    let exec_opt = commands::builtin_exec(cmd);
+    match exec_opt {
+        Some(exec) => exec(config, subcommand_args),
+        None => Err(errors::CliError::code(1)),
+    }
 }
