@@ -27,7 +27,7 @@ fn args_to_init_ops(args: &ArgMatches<'_>) -> Result<init::InitOptions, DiaryErr
 
 pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_init_ops(args)?;
-    let path = init::init(opts, &config)?;
+    let path = init::init(&opts, &config)?;
     let new_cfg = Config::new(
         canonicalize(path).expect("Attempted to canonicalize a path that does not exist."),
     );

@@ -29,8 +29,8 @@ fn establish_path(opts: &InitOptions, config: &Config) -> InitStatus {
     }
 }
 
-pub fn init(opts: InitOptions, config: &Config) -> Result<PathBuf, DiaryError> {
-    let init_status = establish_path(&opts, config);
+pub fn init(opts: &InitOptions, config: &Config) -> Result<PathBuf, DiaryError> {
+    let init_status = establish_path(opts, config);
     let path = match init_status {
         InitStatus::ExistsElsewhere => {
             return Err(DiaryError {
@@ -75,7 +75,7 @@ mod tests {
         let opts = InitOptions { path: dir };
         let config = Config::default();
 
-        init(opts, &config).unwrap();
+        init(&opts, &config).unwrap();
 
         assert!(diary_dir.exists());
     }
@@ -88,7 +88,7 @@ mod tests {
         let config = Config::default();
         create_dir_all(diary_dir).unwrap();
 
-        init(opts, &config).expect_err("No error produced.");
+        init(&opts, &config).expect_err("No error produced.");
     }
 
     #[test]
@@ -100,7 +100,7 @@ mod tests {
         let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions { path: other_dir };
 
-        init(opts, &config).unwrap();
+        init(&opts, &config).unwrap();
 
         assert!(diary_dir.exists());
     }
@@ -116,6 +116,6 @@ mod tests {
 
         create_dir_all(diary_dir).unwrap();
 
-        init(opts, &config).expect_err("No error produced.");
+        init(&opts, &config).expect_err("No error produced.");
     }
 }
