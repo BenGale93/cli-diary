@@ -1,4 +1,4 @@
-use std::{error, fmt};
+use thiserror::Error;
 
 pub struct CliError {
     pub error: Option<anyhow::Error>,
@@ -45,27 +45,17 @@ impl From<DiaryError> for CliError {
     }
 }
 
-#[derive(Debug)]
-pub struct DiaryError {
-    pub desc: String,
-}
-impl DiaryError {
-    fn new(msg: &str) -> DiaryError {
-        DiaryError {
-            desc: msg.to_string(),
-        }
-    }
-}
+#[derive(Error, Debug)]
+pub enum DiaryError {
+    #[error("Diary folder already exists somewhere.")]
+    ExistsElsewhere,
 
-impl fmt::Display for DiaryError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.desc.fmt(f)
-    }
-}
-impl From<std::io::Error> for DiaryError {
-    fn from(err: std::io::Error) -> Self {
-        DiaryError::new(&err.to_string())
-    }
-}
+    #[error("Diary folder already exists at the path provided.")]
+    ExistsHere,
 
-impl error::Error for DiaryError {}
+    #[error("Diary has not been initialised.")]
+    UnInitialised { source: std::io::Error },
+
+    #[error(transparent)]
+    IOError(#[from] std::io::Error),
+}

@@ -2,8 +2,7 @@ extern crate clap;
 use std::fs::canonicalize;
 use std::path::PathBuf;
 
-use clap::{App, Arg, ArgMatches, SubCommand};
-use diary::errors::DiaryError;
+use clap::{App, Arg, ArgMatches, Error, ErrorKind, SubCommand};
 use diary::ops::init;
 use diary::{CliResult, Config};
 
@@ -13,14 +12,16 @@ pub fn cli() -> App<'static, 'static> {
         .arg(Arg::with_name("path").default_value("."))
 }
 
-fn args_to_init_ops(args: &ArgMatches<'_>) -> Result<init::InitOptions, DiaryError> {
+fn args_to_init_ops(args: &ArgMatches<'_>) -> Result<init::InitOptions, Error> {
     if let Some(path) = args.value_of("path") {
         Ok(init::InitOptions {
             path: PathBuf::from(path),
         })
     } else {
-        Err(DiaryError {
-            desc: String::from("Value for path argument not found."),
+        Err(Error {
+            message: String::from("Value for path argument not found."),
+            kind: ErrorKind::MissingRequiredArgument,
+            info: None,
         })
     }
 }

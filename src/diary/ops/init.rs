@@ -7,41 +7,29 @@ pub struct InitOptions {
 }
 
 enum InitStatus {
-    ExistsHere,
-    ExistsElsewhere,
     UseConfig(PathBuf),
     UseOpt(PathBuf),
 }
 
-fn establish_path(opts: &InitOptions, config: &Config) -> InitStatus {
+fn establish_path(opts: &InitOptions, config: &Config) -> Result<InitStatus, DiaryError> {
     if config.diary_path() != &PathBuf::from("") {
         if config.diary_path().exists() {
-            InitStatus::ExistsElsewhere
+            Err(DiaryError::ExistsElsewhere)
         } else {
-            InitStatus::UseConfig(config.diary_path().clone())
+            Ok(InitStatus::UseConfig(config.diary_path().clone()))
         }
     } else {
         let diary_path = opts.path.join("diary");
         if diary_path.exists() {
-            return InitStatus::ExistsHere;
+            return Err(DiaryError::ExistsHere);
         }
-        InitStatus::UseOpt(diary_path)
+        Ok(InitStatus::UseOpt(diary_path))
     }
 }
 
 pub fn init(opts: &InitOptions, config: &Config) -> Result<PathBuf, DiaryError> {
     let init_status = establish_path(opts, config);
-    let path = match init_status {
-        InitStatus::ExistsElsewhere => {
-            return Err(DiaryError {
-                desc: String::from("Diary folder already exists somewhere."),
-            });
-        }
-        InitStatus::ExistsHere => {
-            return Err(DiaryError {
-                desc: String::from("Diary folder already exists at the path provided."),
-            });
-        }
+    let path = match init_status? {
         InitStatus::UseConfig(path) => {
             print!("It appears the config file already has a diary path set. ");
             println!("Creating a diary folder here: {:?}", path);
