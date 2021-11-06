@@ -14,11 +14,11 @@ enum InitStatus {
 }
 
 fn establish_path(opts: &InitOptions, config: &Config) -> InitStatus {
-    if config.diary_path != PathBuf::from("") {
-        if config.diary_path.exists() {
+    if config.diary_path() != &PathBuf::from("") {
+        if config.diary_path().exists() {
             InitStatus::ExistsElsewhere
         } else {
-            InitStatus::UseConfig(config.diary_path.clone())
+            InitStatus::UseConfig(config.diary_path().clone())
         }
     } else {
         let diary_path = opts.path.join("diary");
@@ -95,7 +95,7 @@ mod tests {
     fn filled_config_non_existing_path() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let diary_dir = dir.join("diary");
-        let config = Config::new(diary_dir.clone());
+        let config = Config::new(diary_dir.clone(), String::from("diary"));
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions { path: other_dir };
@@ -109,7 +109,7 @@ mod tests {
     fn filled_config_existing_path() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let diary_dir = dir.join("diary");
-        let config = Config::new(diary_dir.clone());
+        let config = Config::new(diary_dir.clone(), String::from("diary"));
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions { path: other_dir };
