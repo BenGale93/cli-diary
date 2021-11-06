@@ -17,8 +17,7 @@ pub fn cli() -> App<'static, 'static> {
 }
 
 fn args_to_new_opts(args: &ArgMatches<'_>) -> NewOptions {
-    let new_arg = args.value_of("open");
-    let open = new_arg.is_some();
+    let open = args.is_present("open");
     NewOptions { open }
 }
 

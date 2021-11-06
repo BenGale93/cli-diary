@@ -6,6 +6,7 @@ use std::{
 
 use crate::{errors::DiaryError, utils, Config};
 use chrono::prelude::*;
+use edit;
 
 pub struct NewOptions {
     pub open: bool,
@@ -17,7 +18,7 @@ fn add_title(file: &mut File, date: &DateTime<Local>) -> Result<(), DiaryError> 
     let end_title = date.format("%B %Y").to_string();
 
     let full_title = format!(
-        "# {}<sup>{}</sup> {}",
+        "# {}<sup>{}</sup> {}\n\n",
         start_title, date_superscript, end_title
     );
 
@@ -25,7 +26,7 @@ fn add_title(file: &mut File, date: &DateTime<Local>) -> Result<(), DiaryError> 
     Ok(())
 }
 
-pub fn new(_opts: &NewOptions, config: &Config) -> Result<(), DiaryError> {
+pub fn new(opts: &NewOptions, config: &Config) -> Result<(), DiaryError> {
     let today = Local::now();
     let month_folder = PathBuf::from(today.format("%Y-%m").to_string());
     let entry_suffix = today.format("%Y-%m-%d").to_string();
@@ -50,8 +51,16 @@ pub fn new(_opts: &NewOptions, config: &Config) -> Result<(), DiaryError> {
         .write(true)
         .create_new(true)
         .open(new_entry_path);
-    match result {
-        Ok(mut file) => add_title(&mut file, &today),
-        Err(e) => Err(e.into()),
-    }
+    let mut file = match result {
+        Ok(mut file) => {
+            add_title(&mut file, &today)?;
+            file
+        }
+        Err(e) => return Err(e.into()),
+    };
+    if opts.open {
+        let edited = edit::edit("")?;
+        file.write_all(edited.as_bytes())?;
+    };
+    Ok(())
 }
