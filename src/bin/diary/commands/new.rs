@@ -1,4 +1,5 @@
 extern crate clap;
+use chrono::Local;
 use clap::{App, Arg, ArgMatches, SubCommand};
 use diary::{
     ops::new::{new, NewOptions},
@@ -23,7 +24,8 @@ fn args_to_new_opts(args: &ArgMatches<'_>) -> NewOptions {
 
 pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_new_opts(args);
-    new(&opts, &config)?;
+    let date = Local::now();
+    new(&opts, &config, &date)?;
     println!("Ran new command");
     Ok(())
 }
