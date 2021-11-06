@@ -9,6 +9,7 @@ mod config;
 pub mod errors;
 
 pub mod ops;
+pub mod utils;
 
 pub type CliResult = Result<(), errors::CliError>;
 
