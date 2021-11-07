@@ -1,3 +1,6 @@
+[![CICD](https://github.com/BenGale93/cli-diary/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/BenGale93/cli-diary/actions/workflows/rust.yml)
+[![Latest version](https://img.shields.io/crates/v/cli-diary.svg)](https://crates.io/crates/cli-diary)
+
 # cli-diary
 
 Keep a diary using the cli. This program is designed for CLI users to quickly
@@ -82,3 +85,8 @@ diary
     ├── diary_2021-11-06.md
     └── diary_2021-11-07.md
 ```
+
+## Acknowledgements
+
+Huge thanks to the authors of the Cargo library. The architecture of this tools
+is heavily inspired by it.
