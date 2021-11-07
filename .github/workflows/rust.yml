@@ -10,6 +10,24 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  rustfmt:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: rustup update stable && rustup default stable
+    - run: rustup component add rustfmt
+    - run: cargo fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: rustup update stable && rustup default stable
+    - run: rustup component add clippy
+    - run: cargo clippy --all --all-targets --all-features
+
   build:
 
     runs-on: ubuntu-latest
