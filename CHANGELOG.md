@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Added
+
+* Added `add` command.
+
+### Changed
+
+* `user_edit_file` now adds an additional line break to the end of the user's text.
+
 ## [0.1.0] - 2021-11-07
 
 ### Added

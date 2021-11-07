@@ -72,7 +72,26 @@ entry.
 diary new -o
 ```
 
-### Add Command (COMING SOON)
+### Add Command
+
+The `add` command allows you to add to today's entry on the fly. Similar to
+`new -o` the `add` command opens your system editor to allow you to type the
+contents on the new entry. To make this easier it is recommended you use a CLI
+text editor like nano or vim.
+
+The `add` command also has an optional `--tag` flag which allows you to specify
+a Markdown Heading 2 level tag to place above the entry.
+
+```bash
+diary new --tag Tip
+```
+
+```markdown
+## Tip
+
+Content of the new entry.
+
+```
 
 ## Diary Folder Structure
 
@@ -88,5 +107,5 @@ diary
 
 ## Acknowledgements
 
-Huge thanks to the authors of the Cargo library. The architecture of this tools
+Huge thanks to the authors of the Cargo library. The architecture of this tool
 is heavily inspired by it.

@@ -58,4 +58,7 @@ pub enum DiaryError {
 
     #[error(transparent)]
     IOError(#[from] std::io::Error),
+
+    #[error("Today's entry has not yet been created. Use the `new` sub-command.")]
+    NoEntry { source: std::io::Error },
 }

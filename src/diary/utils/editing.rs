@@ -6,7 +6,8 @@ use edit;
 use crate::{errors::DiaryError, utils::date};
 
 pub fn user_edit_file(file: &mut File) -> Result<(), DiaryError> {
-    let edited = edit::edit("")?;
+    let mut edited = edit::edit("")?;
+    edited.push('\n');
     file.write_all(edited.as_bytes())?;
     Ok(())
 }
