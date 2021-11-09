@@ -31,7 +31,8 @@ pub fn new(opts: &NewOptions, config: &Config, date: &DateTime<Local>) -> Result
         Err(e) => return Err(e.into()),
     };
     if opts.open {
-        editing::user_edit_file(&mut file)?;
+        let contents = edit::edit("")?;
+        editing::add_user_content_to_file(&mut file, contents)?;
     };
     Ok(())
 }

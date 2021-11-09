@@ -1,14 +1,12 @@
 use std::{fs::File, io::Write};
 
 use chrono::prelude::*;
-use edit;
 
 use crate::{errors::DiaryError, utils::date};
 
-pub fn user_edit_file(file: &mut File) -> Result<(), DiaryError> {
-    let mut edited = edit::edit("")?;
-    edited.push('\n');
-    file.write_all(edited.as_bytes())?;
+pub fn add_user_content_to_file(file: &mut File, mut content: String) -> Result<(), DiaryError> {
+    content.push('\n');
+    file.write_all(content.as_bytes())?;
     Ok(())
 }
 
