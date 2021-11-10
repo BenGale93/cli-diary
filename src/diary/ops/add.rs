@@ -53,3 +53,45 @@ pub fn add(opts: &AddOptions, config: &Config, date: &DateTime<Local>) -> Result
 
     add_content(file_result, content, opts.tag)
 }
+
+#[cfg(test)]
+mod test {
+    use std::io::Read;
+    use tempfile;
+
+    use super::add_content;
+
+    #[test]
+    fn add_content_no_tag() {
+        let tag = None;
+        let content = "Test content".to_string();
+
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+
+        let temp_file = file.reopen();
+
+        add_content(temp_file, content, tag).unwrap();
+
+        let mut buffer = String::new();
+        file.read_to_string(&mut buffer).unwrap();
+
+        assert_eq!(buffer, "Test content\n");
+    }
+
+    #[test]
+    fn add_content_with_tag() {
+        let tag = Some("Test");
+        let content = "Test content".to_string();
+
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+
+        let temp_file = file.reopen();
+
+        add_content(temp_file, content, tag).unwrap();
+
+        let mut buffer = String::new();
+        file.read_to_string(&mut buffer).unwrap();
+
+        assert_eq!(buffer, "## Test\n\nTest content\n");
+    }
+}
