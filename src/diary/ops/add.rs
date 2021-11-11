@@ -30,6 +30,10 @@ fn add_content(
     content: String,
     tag: Option<&str>,
 ) -> Result<(), DiaryError> {
+    if content.is_empty() {
+        return Ok(());
+    }
+
     match file_result {
         Ok(mut file) => {
             if let Some(tag) = tag {
@@ -93,5 +97,21 @@ mod test {
         file.read_to_string(&mut buffer).unwrap();
 
         assert_eq!(buffer, "## Test\n\nTest content\n");
+    }
+    #[test]
+    fn add_content_empty_string() {
+        let tag = Some("Test");
+        let content = "".to_string();
+
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+
+        let temp_file = file.reopen();
+
+        add_content(temp_file, content, tag).unwrap();
+
+        let mut buffer = String::new();
+        file.read_to_string(&mut buffer).unwrap();
+
+        assert_eq!(buffer, "");
     }
 }

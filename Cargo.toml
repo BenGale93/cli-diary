@@ -6,7 +6,7 @@ description = "A CLI based diary tool for adding entries on the fly."
 keywords = ["diary"]
 readme = "./README.md"
 repository = "https://github.com/BenGale93/cli-diary"
-version = "0.2.0"
+version = "0.3.0-dev"
 edition = "2018"
 license = "Apache-2.0"
 
