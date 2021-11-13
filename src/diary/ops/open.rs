@@ -61,6 +61,7 @@ mod test {
 
     use crate::{
         ops::new::{new, NewOptions},
+        utils::editing::test_string_getter,
         Config,
     };
 
@@ -85,7 +86,7 @@ mod test {
 
         let new_opts = NewOptions { open: false };
 
-        new(&new_opts, &config, &entry_date).unwrap();
+        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
 
         open(&opts, &config, test_user_input).unwrap();
 

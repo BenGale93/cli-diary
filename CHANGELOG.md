@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * New command errors if diary is unintialised.
+* Calls to `edit::edit` now only happen in the binary crate.
+  Function provided to `new` and `add` as an argument. Improves testability.
 
 ## [0.2.0] - 2021-11-10
 

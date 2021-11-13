@@ -24,7 +24,7 @@ fn args_to_add_opts<'a>(args: &'a ArgMatches<'_>) -> AddOptions<'a> {
 pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_add_opts(args);
     let date = Local::now();
-    add(&opts, &config, &date)?;
+    add(&opts, &config, &date, edit::edit)?;
     println!("Ran add command");
     Ok(())
 }
