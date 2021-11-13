@@ -1,3 +1,6 @@
+use std::io;
+
+use chrono::ParseError;
 use thiserror::Error;
 
 pub struct CliError {
@@ -45,6 +48,17 @@ impl From<DiaryError> for CliError {
     }
 }
 
+impl From<ParseError> for CliError {
+    fn from(err: ParseError) -> CliError {
+        CliError::new(err.into(), 101)
+    }
+}
+impl From<io::Error> for CliError {
+    fn from(err: io::Error) -> CliError {
+        CliError::new(err.into(), 1)
+    }
+}
+
 #[derive(Error, Debug)]
 pub enum DiaryError {
     #[error("Diary folder already exists somewhere.")]
@@ -60,7 +74,7 @@ pub enum DiaryError {
     IOError(#[from] std::io::Error),
 
     #[error("Today's entry has not yet been created. Use the `new` sub-command.")]
-    NoEntry { source: std::io::Error },
+    NoEntry { source: Option<std::io::Error> },
 
     #[error("No content provided, aborting.")]
     NoContent,

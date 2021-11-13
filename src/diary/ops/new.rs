@@ -8,7 +8,7 @@ use crate::{
     Config,
 };
 use chrono::{DateTime, Local};
-use std::{fs::OpenOptions, path::PathBuf};
+use std::fs::OpenOptions;
 
 /// The options available to the new command.
 pub struct NewOptions {
@@ -30,9 +30,7 @@ pub struct NewOptions {
 /// DiaryError if the entry already exists.
 /// DiaryError on any other IO issues.
 pub fn new(opts: &NewOptions, config: &Config, date: &DateTime<Local>) -> Result<(), DiaryError> {
-    if config.diary_path() == &PathBuf::from("") {
-        return Err(DiaryError::UnInitialised { source: None });
-    }
+    config.initialised()?;
     let mut new_entry_path = file_system::month_folder(config.diary_path().to_path_buf(), date);
     file_system::create_month_folder(&new_entry_path)?;
 

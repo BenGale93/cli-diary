@@ -93,6 +93,22 @@ Content of the new entry.
 
 ```
 
+### Open Command
+
+The `open` command allows you to open today's entry for review. Similar to `add`
+it will open your system editor, but it will open the entire file.
+
+```bash
+diary open
+```
+
+To open a different day's entry you can provide the --date tag along with the date
+in %Y-%m-%d format, other formats may work.
+
+```bash
+dairy open --date 2021-11-01
+```
+
 ## Diary Folder Structure
 
 The `diary/` folder is organised into monthly sub-folders with each days entry

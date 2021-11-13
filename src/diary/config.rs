@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use crate::errors::DiaryError;
+
 /// A representation of the cli-diary config file.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -24,6 +26,14 @@ impl Config {
 
     pub fn prefix(&self) -> &String {
         &self.prefix
+    }
+
+    pub fn initialised(&self) -> Result<(), DiaryError> {
+        if self.diary_path == PathBuf::from("") {
+            Err(DiaryError::UnInitialised { source: None })
+        } else {
+            Ok(())
+        }
     }
 }
 

@@ -2,12 +2,7 @@
 //!
 //! The add module contains functionality relating to the add command,
 //! independent of the CLI.
-use std::{
-    fs::{File, OpenOptions},
-    io,
-    io::Write,
-    path::PathBuf,
-};
+use std::{fs::File, io, io::Write};
 
 use chrono::{DateTime, Local};
 use edit;
@@ -22,20 +17,6 @@ use crate::{
 pub struct AddOptions<'a> {
     /// An optional entry tag.
     pub tag: Option<&'a str>,
-}
-
-/// Gets a diary entry file.
-///
-/// # Arguments
-///
-/// * `path` - The path to the diary entry.
-/// * `date` - The date of the entry.
-/// * `prefix` - The filename prefix.
-fn get_entry(path: PathBuf, date: &DateTime<Local>, prefix: &str) -> io::Result<File> {
-    let mut entry_path = file_system::month_folder(path, date);
-    let entry_name = file_system::create_entry_name(prefix, date);
-    entry_path.push(entry_name);
-    return OpenOptions::new().append(true).open(entry_path);
 }
 
 /// Adds the given content to a file.
@@ -69,7 +50,7 @@ fn add_content(
             Ok(())
         }
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            Err(DiaryError::NoEntry { source: e })
+            Err(DiaryError::NoEntry { source: Some(e) })
         }
         Err(e) => Err(e.into()),
     }
@@ -87,7 +68,8 @@ fn add_content(
 ///
 /// The unit if adding the content was successful, a DiaryError otherwise.
 pub fn add(opts: &AddOptions, config: &Config, date: &DateTime<Local>) -> Result<(), DiaryError> {
-    let file_result = get_entry(config.diary_path().to_path_buf(), date, config.prefix());
+    let file_result =
+        file_system::get_entry(config.diary_path().to_path_buf(), date, config.prefix());
 
     let content = edit::edit("")?;
 
