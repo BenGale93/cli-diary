@@ -1,16 +1,34 @@
-use std::fs::OpenOptions;
-
+//! # New operations
+//!
+//! The new module contains functionality relating to the new command,
+//! independent of the CLI.
 use crate::{
     errors::DiaryError,
     utils::{editing, file_system},
     Config,
 };
 use chrono::{DateTime, Local};
+use std::fs::OpenOptions;
 
+/// The options available to the new command.
 pub struct NewOptions {
+    /// Whether or not to open the new entry for an initial entry.
     pub open: bool,
 }
 
+/// Creates a new diary entry.
+///
+/// # Arguments
+///
+/// * `opts` - The options passed by the user at runtime.
+/// * `config` - The contents of the config file.
+/// * `date` - The date for which to create the new entry.
+///
+/// # Returns
+///
+/// The unit upon successful creation of the entry.
+/// DiaryError if the entry already exists.
+/// DiaryError on any other IO issues.
 pub fn new(opts: &NewOptions, config: &Config, date: &DateTime<Local>) -> Result<(), DiaryError> {
     let mut new_entry_path = file_system::month_folder(config.diary_path().to_path_buf(), date);
     file_system::create_month_folder(&new_entry_path)?;

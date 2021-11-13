@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+/// A representation of the cli-diary config file.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     diary_path: PathBuf,
@@ -7,6 +8,12 @@ pub struct Config {
 }
 
 impl Config {
+    /// Creates a new Config struct based on the passed arguments.
+    ///
+    /// # Arguments
+    ///
+    /// * `diary_path` - The location of the diary folder.
+    /// * `prefix` - The string prefix added before the date in diary entry filenames.
     pub fn new(diary_path: PathBuf, prefix: String) -> Self {
         Config { diary_path, prefix }
     }
@@ -21,6 +28,7 @@ impl Config {
 }
 
 impl ::std::default::Default for Config {
+    /// Creates a default Config, used when the user doesn't have a config initialised.
     fn default() -> Self {
         Self {
             diary_path: PathBuf::from(""),

@@ -1,8 +1,15 @@
+//! # Init operations
+//!
+//! The init module contains functionality relating to the init command,
+//! independent of the CLI.
+
 use std::{fs::create_dir_all, path::PathBuf};
 
 use crate::{errors::DiaryError, Config};
 
+/// The options available to the init command.
 pub struct InitOptions {
+    /// The path to initialise the diary folder.
     pub path: PathBuf,
 }
 
@@ -11,6 +18,17 @@ enum InitStatus {
     UseOpt(PathBuf),
 }
 
+/// Establishes where the diary folder should be initialised.
+///
+/// # Arguments
+///
+/// * `opts` - The options passed by the user at runtime.
+/// * `config` - The contents of the config file.
+///
+/// # Returns
+///
+/// Either the initialisation status, which provides the path to use, or a DiaryError
+/// if the diary is already initialised somewhere.
 fn establish_path(opts: &InitOptions, config: &Config) -> Result<InitStatus, DiaryError> {
     if config.diary_path() != &PathBuf::from("") {
         if config.diary_path().exists() {
@@ -27,6 +45,17 @@ fn establish_path(opts: &InitOptions, config: &Config) -> Result<InitStatus, Dia
     }
 }
 
+/// Initialises the diary folder, if possible.
+///
+/// # Arguments
+///
+/// * `opts` - The options passed by the user at runtime.
+/// * `config` - The contents of the config file.
+///
+/// # Returns
+///
+/// Either the Path of the new diary folder or a DiaryError if there was an
+/// issue with initialisation.
 pub fn init(opts: &InitOptions, config: &Config) -> Result<PathBuf, DiaryError> {
     let init_status = establish_path(opts, config);
     let path = match init_status? {

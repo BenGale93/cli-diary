@@ -1,3 +1,7 @@
+//! # Add operations
+//!
+//! The add module contains functionality relating to the add command,
+//! independent of the CLI.
 use std::{
     fs::{File, OpenOptions},
     io,
@@ -14,10 +18,19 @@ use crate::{
     Config,
 };
 
+/// The options available to the add command.
 pub struct AddOptions<'a> {
+    /// An optional entry tag.
     pub tag: Option<&'a str>,
 }
 
+/// Gets a diary entry file.
+///
+/// # Arguments
+///
+/// * `path` - The path to the diary entry.
+/// * `date` - The date of the entry.
+/// * `prefix` - The filename prefix.
 fn get_entry(path: PathBuf, date: &DateTime<Local>, prefix: &str) -> io::Result<File> {
     let mut entry_path = file_system::month_folder(path, date);
     let entry_name = file_system::create_entry_name(prefix, date);
@@ -25,6 +38,18 @@ fn get_entry(path: PathBuf, date: &DateTime<Local>, prefix: &str) -> io::Result<
     return OpenOptions::new().append(true).open(entry_path);
 }
 
+/// Adds the given content to a file.
+///
+/// # Arguments
+///
+/// * `file_result` The prospective file to add the content to.
+/// * `content` The content to add to the file above.
+/// * `tag` The optional tag to place above the content, header 2 markdown.
+///
+/// # Errors
+///
+/// * If `file_result` contains an error.
+/// * If
 fn add_content(
     file_result: io::Result<File>,
     content: String,
@@ -50,6 +75,17 @@ fn add_content(
     }
 }
 
+/// Adds user provided content to a diary entry.
+///
+/// # Arguments
+///
+/// * `opts` - The options available to the add function.
+/// * `config` - The diary config file.
+/// * `date` - The date of the entry to add to.
+///
+/// # Returns
+///
+/// The unit if adding the content was successful, a DiaryError otherwise.
 pub fn add(opts: &AddOptions, config: &Config, date: &DateTime<Local>) -> Result<(), DiaryError> {
     let file_result = get_entry(config.diary_path().to_path_buf(), date, config.prefix());
 
