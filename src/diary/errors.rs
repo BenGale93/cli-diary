@@ -53,8 +53,8 @@ pub enum DiaryError {
     #[error("Diary folder already exists at the path provided.")]
     ExistsHere,
 
-    #[error("Diary has not been initialised.")]
-    UnInitialised { source: std::io::Error },
+    #[error("Diary has not been initialised. Use the `init` sub-command.")]
+    UnInitialised { source: Option<std::io::Error> },
 
     #[error(transparent)]
     IOError(#[from] std::io::Error),

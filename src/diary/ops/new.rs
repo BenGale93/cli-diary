@@ -8,7 +8,7 @@ use crate::{
     Config,
 };
 use chrono::{DateTime, Local};
-use std::fs::OpenOptions;
+use std::{fs::OpenOptions, path::PathBuf};
 
 /// The options available to the new command.
 pub struct NewOptions {
@@ -30,6 +30,9 @@ pub struct NewOptions {
 /// DiaryError if the entry already exists.
 /// DiaryError on any other IO issues.
 pub fn new(opts: &NewOptions, config: &Config, date: &DateTime<Local>) -> Result<(), DiaryError> {
+    if config.diary_path() == &PathBuf::from("") {
+        return Err(DiaryError::UnInitialised { source: None });
+    }
     let mut new_entry_path = file_system::month_folder(config.diary_path().to_path_buf(), date);
     file_system::create_month_folder(&new_entry_path)?;
 
@@ -91,7 +94,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "kind: NotFound")]
     fn new_not_init() {
         let new_opts = NewOptions { open: false };
         let diary_path = tempdir().unwrap().path().to_path_buf();
@@ -102,7 +105,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "kind: AlreadyExists")]
     fn new_fail_second_time() {
         let new_opts = NewOptions { open: false };
         let init_opts = InitOptions {
@@ -115,6 +118,16 @@ mod test {
         init(&init_opts, &config).unwrap();
 
         new(&new_opts, &config, &date).unwrap();
+        new(&new_opts, &config, &date).unwrap();
+    }
+
+    #[test]
+    #[should_panic(expected = "value: UnInitialised")]
+    fn new_not_init_default_config() {
+        let new_opts = NewOptions { open: false };
+        let config = Config::default();
+        let date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+
         new(&new_opts, &config, &date).unwrap();
     }
 }

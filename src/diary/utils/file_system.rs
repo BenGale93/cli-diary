@@ -17,7 +17,7 @@ pub fn create_month_folder(path: &Path) -> Result<(), DiaryError> {
         match create_dir(&path) {
             Ok(_) => Ok(()),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                Err(DiaryError::UnInitialised { source: e })
+                Err(DiaryError::UnInitialised { source: Some(e) })
             }
             Err(e) => panic!("Unexpected IO error {}", e),
         }
