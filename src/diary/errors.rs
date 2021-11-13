@@ -61,4 +61,7 @@ pub enum DiaryError {
 
     #[error("Today's entry has not yet been created. Use the `new` sub-command.")]
     NoEntry { source: std::io::Error },
+
+    #[error("No content provided, aborting.")]
+    NoContent,
 }

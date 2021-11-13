@@ -56,7 +56,7 @@ fn add_content(
     tag: Option<&str>,
 ) -> Result<(), DiaryError> {
     if content.is_empty() {
-        return Ok(());
+        return Err(DiaryError::NoContent);
     }
 
     match file_result {
@@ -135,19 +135,13 @@ mod test {
         assert_eq!(buffer, "## Test\n\nTest content\n");
     }
     #[test]
+    #[should_panic(expected = "value: NoContent")]
     fn add_content_empty_string() {
         let tag = Some("Test");
         let content = "".to_string();
 
-        let mut file = tempfile::NamedTempFile::new().unwrap();
+        let file = tempfile::tempfile();
 
-        let temp_file = file.reopen();
-
-        add_content(temp_file, content, tag).unwrap();
-
-        let mut buffer = String::new();
-        file.read_to_string(&mut buffer).unwrap();
-
-        assert_eq!(buffer, "");
+        add_content(file, content, tag).unwrap();
     }
 }
