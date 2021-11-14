@@ -21,9 +21,9 @@ fn args_to_add_opts(args: &ArgMatches<'_>) -> Result<OpenFileOptions, ParseError
     let entry_date = match args.value_of("date") {
         Some(val) => {
             let date = NaiveDate::from_str(val)?;
-            Local.from_utc_datetime(&date.and_hms(0, 0, 0))
+            Local.from_utc_date(&date)
         }
-        _ => Local::now(),
+        _ => Local::today(),
     };
     Ok(OpenFileOptions { entry_date })
 }

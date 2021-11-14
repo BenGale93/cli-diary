@@ -5,14 +5,14 @@
 
 use std::{io, path::PathBuf};
 
-use chrono::{DateTime, Local};
+use chrono::prelude::*;
 
 use crate::{errors::DiaryError, utils::file_system, Config};
 
 /// The options available to the open command.
 pub struct OpenFileOptions {
     /// The date of the entry to open.
-    pub entry_date: DateTime<Local>,
+    pub entry_date: Date<Local>,
 }
 
 /// Opens a specific diary entry for editing.
@@ -77,7 +77,7 @@ mod test {
 
     #[test]
     fn open_success() {
-        let entry_date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
         let temp_dir = tempdir().unwrap();
         let mut filepath = temp_dir.path().to_path_buf();
@@ -99,7 +99,7 @@ mod test {
     #[test]
     #[should_panic(expected = "value: NoEntry")]
     fn open_no_entry() {
-        let entry_date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
         let temp_dir = tempdir().unwrap();
         let filepath = temp_dir.path().to_path_buf();
@@ -112,7 +112,7 @@ mod test {
     #[test]
     #[should_panic(expected = "value: UnInitialised")]
     fn open_bad_config() {
-        let entry_date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
 
         let config = Config::new(PathBuf::from(""), "diary".to_string());

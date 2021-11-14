@@ -4,7 +4,7 @@
 //! independent of the CLI.
 use std::{fs::File, io, io::Write};
 
-use chrono::{DateTime, Local};
+use chrono::prelude::*;
 
 use crate::{
     errors::DiaryError,
@@ -69,7 +69,7 @@ fn add_content(
 pub fn add(
     opts: &AddOptions,
     config: &Config,
-    date: &DateTime<Local>,
+    date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
     let file_result =
@@ -96,7 +96,7 @@ mod test {
     };
     #[test]
     fn add_no_tag() {
-        let entry_date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: None };
         let temp_dir = tempdir().unwrap();
         let mut filepath = temp_dir.path().to_path_buf();
@@ -117,7 +117,7 @@ mod test {
 
     #[test]
     fn add_with_tag() {
-        let entry_date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: Some("Tag") };
         let temp_dir = tempdir().unwrap();
         let mut filepath = temp_dir.path().to_path_buf();
@@ -139,7 +139,7 @@ mod test {
     #[test]
     #[should_panic(expected = "value: NoContent")]
     fn add_empty_string() {
-        let entry_date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: Some("Tag") };
         let temp_dir = tempdir().unwrap();
         let filepath = temp_dir.path().to_path_buf();

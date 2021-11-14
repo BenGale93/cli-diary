@@ -24,7 +24,7 @@ fn args_to_new_opts(args: &ArgMatches<'_>) -> NewOptions {
 
 pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_new_opts(args);
-    let date = Local::now();
+    let date = Local::today();
     new(&opts, &config, &date, edit::edit)?;
     println!("Ran new command");
     Ok(())

@@ -7,7 +7,7 @@ use crate::{
     utils::{editing, file_system},
     Config,
 };
-use chrono::{DateTime, Local};
+use chrono::prelude::*;
 use std::fs::OpenOptions;
 
 /// The options available to the new command.
@@ -32,7 +32,7 @@ pub struct NewOptions {
 pub fn new(
     opts: &NewOptions,
     config: &Config,
-    date: &DateTime<Local>,
+    date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
     config.initialised()?;
@@ -80,7 +80,7 @@ mod test {
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
-        let date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let date = Local.ymd(2021, 11, 6);
 
         init(&init_opts, &config).unwrap();
 
@@ -102,7 +102,7 @@ mod test {
         let new_opts = NewOptions { open: false };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
-        let date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
     }
@@ -116,7 +116,7 @@ mod test {
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
-        let date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let date = Local.ymd(2021, 11, 6);
 
         init(&init_opts, &config).unwrap();
 
@@ -129,7 +129,7 @@ mod test {
     fn new_not_init_default_config() {
         let new_opts = NewOptions { open: false };
         let config = Config::default();
-        let date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
     }
@@ -142,7 +142,7 @@ mod test {
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
-        let date = Local.ymd(2021, 11, 6).and_hms(0, 0, 0);
+        let date = Local.ymd(2021, 11, 6);
 
         init(&init_opts, &config).unwrap();
 
