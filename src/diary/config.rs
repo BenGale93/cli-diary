@@ -1,6 +1,11 @@
-use std::path::PathBuf;
+use std::{fs::File, io, path::PathBuf};
 
-use crate::errors::DiaryError;
+use chrono::prelude::*;
+
+use crate::{
+    errors::DiaryError,
+    utils::file_system::{get_entry, get_entry_path},
+};
 
 /// A representation of the cli-diary config file.
 #[derive(Debug, Serialize, Deserialize)]
@@ -34,6 +39,13 @@ impl Config {
         } else {
             Ok(())
         }
+    }
+    pub fn get_entry_path(&self, date: &Date<Local>) -> PathBuf {
+        get_entry_path(self.diary_path.to_path_buf(), date, &self.prefix)
+    }
+
+    pub fn get_entry_file(&self, date: &Date<Local>) -> io::Result<File> {
+        get_entry(self.diary_path.to_path_buf(), date, &self.prefix)
     }
 }
 

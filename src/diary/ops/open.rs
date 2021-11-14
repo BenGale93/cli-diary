@@ -7,7 +7,7 @@ use std::{io, path::PathBuf};
 
 use chrono::prelude::*;
 
-use crate::{errors::DiaryError, utils::file_system, Config};
+use crate::{errors::DiaryError, Config};
 
 /// The options available to the open command.
 pub struct OpenFileOptions {
@@ -30,11 +30,7 @@ pub fn open(
 ) -> Result<(), DiaryError> {
     config.initialised()?;
 
-    let entry_path = file_system::get_entry_path(
-        config.diary_path().to_path_buf(),
-        &opts.entry_date,
-        config.prefix(),
-    );
+    let entry_path = config.get_entry_path(&opts.entry_date);
 
     if !entry_path.exists() {
         return Err(DiaryError::NoEntry { source: None });
@@ -80,9 +76,9 @@ mod test {
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
         let temp_dir = tempdir().unwrap();
-        let mut filepath = temp_dir.path().to_path_buf();
+        let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath.clone(), "diary".to_string());
+        let config = Config::new(filepath, "diary".to_string());
 
         let new_opts = NewOptions { open: false };
 
@@ -90,8 +86,9 @@ mod test {
 
         open(&opts, &config, test_user_input).unwrap();
 
-        filepath.push("2021-11/diary_2021-11-06.md");
-        let content = fs::read_to_string(filepath).unwrap();
+        let entry_path = config.get_entry_path(&entry_date);
+
+        let content = fs::read_to_string(entry_path).unwrap();
 
         assert!(content.contains("Test content"));
     }

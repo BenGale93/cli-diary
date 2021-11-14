@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Added
+
+* Added `get_entry_file` and `get_entry_path` to Config. This allows the caller
+  to get the entry using just a date.
+
 ## [0.3.0] - 2021-11-14
 
 ### Added

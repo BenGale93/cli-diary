@@ -6,11 +6,7 @@ use std::{fs::File, io, io::Write};
 
 use chrono::prelude::*;
 
-use crate::{
-    errors::DiaryError,
-    utils::{editing, file_system},
-    Config,
-};
+use crate::{errors::DiaryError, utils::editing, Config};
 
 /// The options available to the add command.
 pub struct AddOptions<'a> {
@@ -72,8 +68,7 @@ pub fn add(
     date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
-    let file_result =
-        file_system::get_entry(config.diary_path().to_path_buf(), date, config.prefix());
+    let file_result = config.get_entry_file(date);
 
     let content = string_getter("".to_string())?;
 
@@ -99,9 +94,9 @@ mod test {
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: None };
         let temp_dir = tempdir().unwrap();
-        let mut filepath = temp_dir.path().to_path_buf();
+        let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath.clone(), "diary".to_string());
+        let config = Config::new(filepath, "diary".to_string());
 
         let new_opts = NewOptions { open: false };
 
@@ -109,8 +104,9 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        filepath.push("2021-11/diary_2021-11-06.md");
-        let content = fs::read_to_string(filepath).unwrap();
+        let entry_path = config.get_entry_path(&entry_date);
+
+        let content = fs::read_to_string(entry_path).unwrap();
 
         assert!(content.contains("Test content"));
     }
@@ -120,9 +116,9 @@ mod test {
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: Some("Tag") };
         let temp_dir = tempdir().unwrap();
-        let mut filepath = temp_dir.path().to_path_buf();
+        let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath.clone(), "diary".to_string());
+        let config = Config::new(filepath, "diary".to_string());
 
         let new_opts = NewOptions { open: false };
 
@@ -130,8 +126,9 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        filepath.push("2021-11/diary_2021-11-06.md");
-        let content = fs::read_to_string(filepath).unwrap();
+        let entry_path = config.get_entry_path(&entry_date);
+
+        let content = fs::read_to_string(entry_path).unwrap();
 
         assert!(content.contains("Test content"));
         assert!(content.contains("Tag"));

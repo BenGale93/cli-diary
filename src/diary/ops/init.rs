@@ -34,7 +34,7 @@ fn establish_path(opts: &InitOptions, config: &Config) -> Result<InitStatus, Dia
         if config.diary_path().exists() {
             Err(DiaryError::ExistsElsewhere)
         } else {
-            Ok(InitStatus::UseConfig(config.diary_path().clone()))
+            Ok(InitStatus::UseConfig(config.diary_path().to_path_buf()))
         }
     } else {
         let diary_path = opts.path.join("diary");

@@ -86,12 +86,7 @@ mod test {
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 
-        let mut test_path = config.diary_path().clone();
-        test_path.push("2021-11");
-
-        assert!(test_path.exists());
-
-        test_path.push("diary_2021-11-06.md");
+        let test_path = config.get_entry_path(&date);
 
         assert!(test_path.exists());
     }
@@ -148,8 +143,7 @@ mod test {
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 
-        let mut test_path = config.diary_path().clone();
-        test_path.push("2021-11/diary_2021-11-06.md");
+        let test_path = config.get_entry_path(&date);
 
         let content = fs::read_to_string(test_path).unwrap();
         assert!(content.contains("Test content"));
