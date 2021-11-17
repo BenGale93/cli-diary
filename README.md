@@ -34,7 +34,9 @@ diary init <path/to/create>
 ```
 
 The path is optional and if not provided the new `diary/` folder will be
-created in the current directory.
+created in the current directory. You can also pass an optional `--prefix`
+flag.  The value provided to this will be used to prefix you diary file names.
+By default `diary` is used a prefix, see more below.
 
 ## Configuration
 

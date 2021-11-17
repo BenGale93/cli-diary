@@ -11,6 +11,8 @@ use crate::{errors::DiaryError, Config};
 pub struct InitOptions {
     /// The path to initialise the diary folder.
     pub path: PathBuf,
+    /// The prefix to use for the diary entries.
+    pub prefix: Option<String>,
 }
 
 enum InitStatus {
@@ -89,7 +91,10 @@ mod tests {
     fn blank_config_valid_path() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let diary_dir = dir.join("diary");
-        let opts = InitOptions { path: dir };
+        let opts = InitOptions {
+            path: dir,
+            prefix: None,
+        };
         let config = Config::default();
 
         init(&opts, &config).unwrap();
@@ -101,7 +106,10 @@ mod tests {
     fn blank_config_invalid_path() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let diary_dir = dir.join("diary");
-        let opts = InitOptions { path: dir };
+        let opts = InitOptions {
+            path: dir,
+            prefix: None,
+        };
         let config = Config::default();
         create_dir_all(diary_dir).unwrap();
 
@@ -115,7 +123,10 @@ mod tests {
         let config = Config::new(diary_dir.clone(), String::from("diary"));
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
-        let opts = InitOptions { path: other_dir };
+        let opts = InitOptions {
+            path: other_dir,
+            prefix: None,
+        };
 
         init(&opts, &config).unwrap();
 
@@ -129,7 +140,10 @@ mod tests {
         let config = Config::new(diary_dir.clone(), String::from("diary"));
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
-        let opts = InitOptions { path: other_dir };
+        let opts = InitOptions {
+            path: other_dir,
+            prefix: None,
+        };
 
         create_dir_all(diary_dir).unwrap();
 

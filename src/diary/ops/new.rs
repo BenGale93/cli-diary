@@ -77,6 +77,7 @@ mod test {
         let new_opts = NewOptions { open: false };
         let init_opts = InitOptions {
             path: PathBuf::from(""),
+            prefix: None,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
@@ -108,6 +109,7 @@ mod test {
         let new_opts = NewOptions { open: false };
         let init_opts = InitOptions {
             path: PathBuf::from(""),
+            prefix: None,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
@@ -134,6 +136,7 @@ mod test {
         let new_opts = NewOptions { open: true };
         let init_opts = InitOptions {
             path: PathBuf::from(""),
+            prefix: None,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
