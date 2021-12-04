@@ -78,6 +78,7 @@ mod test {
         let init_opts = InitOptions {
             path: PathBuf::from(""),
             prefix: None,
+            git_repo: false,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
@@ -110,6 +111,7 @@ mod test {
         let init_opts = InitOptions {
             path: PathBuf::from(""),
             prefix: None,
+            git_repo: false,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));
@@ -137,6 +139,7 @@ mod test {
         let init_opts = InitOptions {
             path: PathBuf::from(""),
             prefix: None,
+            git_repo: false,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
         let config = Config::new(diary_path, String::from("diary"));

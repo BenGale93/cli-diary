@@ -3,6 +3,7 @@
 //! The init module contains functionality relating to the init command,
 //! independent of the CLI.
 
+use git2::Repository;
 use std::{fs::create_dir_all, path::PathBuf};
 
 use crate::{errors::DiaryError, Config};
@@ -13,6 +14,8 @@ pub struct InitOptions {
     pub path: PathBuf,
     /// The prefix to use for the diary entries.
     pub prefix: Option<String>,
+    /// Whether or not to init a git repo.
+    pub git_repo: bool,
 }
 
 enum InitStatus {
@@ -71,10 +74,18 @@ pub fn init(opts: &InitOptions, config: &Config) -> Result<PathBuf, DiaryError> 
             path
         }
     };
-    match create_dir_all(&path) {
-        Ok(_) => Ok(path),
-        Err(e) => Err(DiaryError::from(e)),
-    }
+    let path = match create_dir_all(&path) {
+        Ok(_) => path,
+        Err(e) => return Err(DiaryError::from(e)),
+    };
+
+    if opts.git_repo {
+        match Repository::init(&path) {
+            Ok(_) => (),
+            Err(e) => return Err(DiaryError::from(e)),
+        };
+    };
+    Ok(path)
 }
 
 #[cfg(test)]
@@ -94,6 +105,7 @@ mod tests {
         let opts = InitOptions {
             path: dir,
             prefix: None,
+            git_repo: false,
         };
         let config = Config::default();
 
@@ -109,6 +121,7 @@ mod tests {
         let opts = InitOptions {
             path: dir,
             prefix: None,
+            git_repo: false,
         };
         let config = Config::default();
         create_dir_all(diary_dir).unwrap();
@@ -126,6 +139,7 @@ mod tests {
         let opts = InitOptions {
             path: other_dir,
             prefix: None,
+            git_repo: false,
         };
 
         init(&opts, &config).unwrap();
@@ -143,6 +157,63 @@ mod tests {
         let opts = InitOptions {
             path: other_dir,
             prefix: None,
+            git_repo: false,
+        };
+
+        create_dir_all(diary_dir).unwrap();
+
+        init(&opts, &config).expect_err("No error produced.");
+    }
+
+    #[test]
+    fn blank_config_valid_path_git_repo() {
+        let dir = tempdir().unwrap().path().to_path_buf();
+        let mut diary_dir = dir.join("diary");
+        let opts = InitOptions {
+            path: dir,
+            prefix: None,
+            git_repo: true,
+        };
+        let config = Config::default();
+
+        init(&opts, &config).unwrap();
+
+        diary_dir.push(".git");
+
+        assert!(diary_dir.exists());
+    }
+
+    #[test]
+    fn filled_config_non_existing_path_git_repo() {
+        let dir = tempdir().unwrap().path().to_path_buf();
+        let mut diary_dir = dir.join("diary");
+        let config = Config::new(diary_dir.clone(), String::from("diary"));
+
+        let other_dir = tempdir().unwrap().path().to_path_buf();
+        let opts = InitOptions {
+            path: other_dir,
+            prefix: None,
+            git_repo: true,
+        };
+
+        init(&opts, &config).unwrap();
+
+        diary_dir.push(".git");
+
+        assert!(diary_dir.exists());
+    }
+
+    #[test]
+    fn filled_config_existing_path_git_repo() {
+        let dir = tempdir().unwrap().path().to_path_buf();
+        let diary_dir = dir.join("diary");
+        let config = Config::new(diary_dir.clone(), String::from("diary"));
+
+        let other_dir = tempdir().unwrap().path().to_path_buf();
+        let opts = InitOptions {
+            path: other_dir,
+            prefix: None,
+            git_repo: true,
         };
 
         create_dir_all(diary_dir).unwrap();

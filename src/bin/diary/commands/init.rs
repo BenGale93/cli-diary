@@ -15,6 +15,14 @@ pub fn cli() -> App<'static, 'static> {
                 .help("The location you would like the diary folder to be created."),
         )
         .arg(
+            Arg::with_name("repo")
+                .long("repo")
+                .short("r")
+                .required(false)
+                .takes_value(false)
+                .help("Whether or not to initialise a git repo in the diary folder."),
+        )
+        .arg(
             Arg::with_name("prefix")
                 .long("prefix")
                 .takes_value(true)
@@ -35,9 +43,12 @@ fn args_to_init_ops(args: &ArgMatches<'_>) -> Result<init::InitOptions, Error> {
     };
     let diary_prefix = args.value_of("prefix").map(String::from);
 
+    let git_repo = args.is_present("repo");
+
     Ok(InitOptions {
         path: diary_path,
         prefix: diary_prefix,
+        git_repo,
     })
 }
 
@@ -61,6 +72,8 @@ pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
 
 #[cfg(test)]
 mod tests {
+    use std::path::PathBuf;
+
     use super::{args_to_init_ops, cli};
 
     #[test]
@@ -74,5 +87,7 @@ mod tests {
         let opts = args_to_init_ops(&args).unwrap();
 
         assert!(opts.prefix == Some(String::from("test")));
+        assert!(opts.path == PathBuf::from("."));
+        assert!(!opts.git_repo);
     }
 }
