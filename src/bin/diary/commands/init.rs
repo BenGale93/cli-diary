@@ -17,6 +17,7 @@ pub fn cli() -> App<'static, 'static> {
         .arg(
             Arg::with_name("prefix")
                 .long("prefix")
+                .takes_value(true)
                 .help("Sets the diary files name prefix."),
         )
 }
@@ -56,4 +57,22 @@ pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     confy::store("diary", new_cfg)?;
     println!("Initialised diary.");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{args_to_init_ops, cli};
+
+    #[test]
+    fn test_with_prefix() {
+        let app = cli();
+
+        let args = app
+            .clone()
+            .get_matches_from(vec!["init", "--prefix", "test"]);
+
+        let opts = args_to_init_ops(&args).unwrap();
+
+        assert!(opts.prefix == Some(String::from("test")));
+    }
 }
