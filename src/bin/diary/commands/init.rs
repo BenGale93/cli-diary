@@ -54,6 +54,6 @@ pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
         new_prefix,
     );
     confy::store("diary", new_cfg)?;
-    println!("Ran init command");
+    println!("Initialised diary.");
     Ok(())
 }

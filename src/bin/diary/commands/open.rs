@@ -31,6 +31,6 @@ fn args_to_add_opts(args: &ArgMatches<'_>) -> Result<OpenFileOptions, ParseError
 pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_add_opts(args)?;
     open(&opts, &config, edit::edit_file)?;
-    println!("Ran open command");
+    println!("Opened diary entry.");
     Ok(())
 }

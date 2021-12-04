@@ -25,6 +25,6 @@ pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_add_opts(args);
     let date = Local::today();
     add(&opts, &config, &date, edit::edit)?;
-    println!("Ran add command");
+    println!("Added content.");
     Ok(())
 }
