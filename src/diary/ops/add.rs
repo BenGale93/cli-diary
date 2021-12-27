@@ -96,7 +96,7 @@ mod test {
         let temp_dir = tempdir().unwrap();
         let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath, "diary".to_string());
+        let config = Config::builder().diary_path(filepath).build();
 
         let new_opts = NewOptions { open: false };
 
@@ -118,7 +118,7 @@ mod test {
         let temp_dir = tempdir().unwrap();
         let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath, "diary".to_string());
+        let config = Config::builder().diary_path(filepath).build();
 
         let new_opts = NewOptions { open: false };
 
@@ -141,7 +141,7 @@ mod test {
         let temp_dir = tempdir().unwrap();
         let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath, "diary".to_string());
+        let config = Config::builder().diary_path(filepath).build();
 
         let new_opts = NewOptions { open: false };
 

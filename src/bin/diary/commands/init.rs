@@ -61,10 +61,12 @@ pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
         None => config.prefix().to_string(),
     };
 
-    let new_cfg = Config::new(
-        canonicalize(path).expect("Attempted to canonicalize a path that does not exist."),
-        new_prefix,
-    );
+    let new_cfg = Config::builder()
+        .diary_path(
+            canonicalize(path).expect("Attempted to canonicalize a path that does not exist."),
+        )
+        .prefix(new_prefix)
+        .build();
     confy::store("diary", new_cfg)?;
     println!("Initialised diary.");
     Ok(())

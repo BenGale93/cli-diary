@@ -78,7 +78,7 @@ mod test {
         let temp_dir = tempdir().unwrap();
         let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath, "diary".to_string());
+        let config = Config::builder().diary_path(filepath).build();
 
         let new_opts = NewOptions { open: false };
 
@@ -101,7 +101,7 @@ mod test {
         let temp_dir = tempdir().unwrap();
         let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::new(filepath, "diary".to_string());
+        let config = Config::builder().diary_path(filepath).build();
 
         open(&opts, &config, test_user_input).unwrap();
     }
@@ -112,7 +112,7 @@ mod test {
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
 
-        let config = Config::new(PathBuf::from(""), "diary".to_string());
+        let config = Config::default();
 
         open(&opts, &config, test_user_input).unwrap();
     }

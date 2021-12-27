@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Changed
+
+* Refactored Config to make use of the builder pattern.
+
 ### Added
 
 * Added `get_entry_file` and `get_entry_path` to Config. This allows the caller

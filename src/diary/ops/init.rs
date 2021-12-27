@@ -133,7 +133,8 @@ mod tests {
     fn filled_config_non_existing_path() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let diary_dir = dir.join("diary");
-        let config = Config::new(diary_dir.clone(), String::from("diary"));
+
+        let config = Config::builder().diary_path(diary_dir.clone()).build();
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {
@@ -151,7 +152,7 @@ mod tests {
     fn filled_config_existing_path() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let diary_dir = dir.join("diary");
-        let config = Config::new(diary_dir.clone(), String::from("diary"));
+        let config = Config::builder().diary_path(diary_dir.clone()).build();
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {
@@ -187,7 +188,7 @@ mod tests {
     fn filled_config_non_existing_path_git_repo() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let mut diary_dir = dir.join("diary");
-        let config = Config::new(diary_dir.clone(), String::from("diary"));
+        let config = Config::builder().diary_path(diary_dir.clone()).build();
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {
@@ -207,7 +208,7 @@ mod tests {
     fn filled_config_existing_path_git_repo() {
         let dir = tempdir().unwrap().path().to_path_buf();
         let diary_dir = dir.join("diary");
-        let config = Config::new(diary_dir.clone(), String::from("diary"));
+        let config = Config::builder().diary_path(diary_dir.clone()).build();
 
         let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {

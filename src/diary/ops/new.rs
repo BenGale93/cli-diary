@@ -81,7 +81,7 @@ mod test {
             git_repo: false,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::new(diary_path, String::from("diary"));
+        let config = Config::builder().diary_path(diary_path).build();
         let date = Local.ymd(2021, 11, 6);
 
         init(&init_opts, &config).unwrap();
@@ -98,7 +98,7 @@ mod test {
     fn new_not_init() {
         let new_opts = NewOptions { open: false };
         let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::new(diary_path, String::from("diary"));
+        let config = Config::builder().diary_path(diary_path).build();
         let date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
@@ -114,7 +114,7 @@ mod test {
             git_repo: false,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::new(diary_path, String::from("diary"));
+        let config = Config::builder().diary_path(diary_path).build();
         let date = Local.ymd(2021, 11, 6);
 
         init(&init_opts, &config).unwrap();
@@ -142,7 +142,7 @@ mod test {
             git_repo: false,
         };
         let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::new(diary_path, String::from("diary"));
+        let config = Config::builder().diary_path(diary_path).build();
         let date = Local.ymd(2021, 11, 6);
 
         init(&init_opts, &config).unwrap();

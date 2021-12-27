@@ -7,6 +7,34 @@ use crate::{
     utils::file_system::{get_entry, get_entry_path},
 };
 
+pub struct ConfigBuilder {
+    diary_path: PathBuf,
+    prefix: String,
+}
+
+impl ConfigBuilder {
+    fn new() -> Self {
+        Self {
+            diary_path: PathBuf::from(""),
+            prefix: String::from("diary"),
+        }
+    }
+
+    pub fn diary_path(mut self, diary_path: PathBuf) -> Self {
+        self.diary_path = diary_path;
+        self
+    }
+    pub fn prefix(mut self, prefix: impl Into<String>) -> Self {
+        self.prefix = prefix.into();
+        self
+    }
+
+    pub fn build(self) -> Config {
+        let Self { diary_path, prefix } = self;
+        Config { diary_path, prefix }
+    }
+}
+
 /// A representation of the cli-diary config file.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -15,14 +43,8 @@ pub struct Config {
 }
 
 impl Config {
-    /// Creates a new Config struct based on the passed arguments.
-    ///
-    /// # Arguments
-    ///
-    /// * `diary_path` - The location of the diary folder.
-    /// * `prefix` - The string prefix added before the date in diary entry filenames.
-    pub fn new(diary_path: PathBuf, prefix: String) -> Self {
-        Config { diary_path, prefix }
+    pub fn builder() -> ConfigBuilder {
+        ConfigBuilder::new()
     }
 
     pub fn diary_path(&self) -> &PathBuf {
