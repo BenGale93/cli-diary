@@ -80,3 +80,21 @@ impl ::std::default::Default for Config {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use super::Config;
+
+    #[test]
+    fn full_config_build() {
+        let cfg = Config::builder()
+            .diary_path(PathBuf::from("/home/"))
+            .prefix("dy")
+            .build();
+
+        assert_eq!(cfg.prefix(), "dy");
+        assert_eq!(cfg.diary_path(), &PathBuf::from("/home/"))
+    }
+}
