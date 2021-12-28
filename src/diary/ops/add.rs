@@ -149,4 +149,17 @@ mod test {
 
         add(&opts, &config, &entry_date, test_empty_string_getter).unwrap();
     }
+
+    #[test]
+    #[should_panic(expected = "value: NoEntry")]
+    fn add_to_nonexistent_file() {
+        let entry_date = Local.ymd(2021, 11, 6);
+        let opts = AddOptions { tag: Some("Tag") };
+        let temp_dir = tempdir().unwrap();
+        let filepath = temp_dir.path().to_path_buf();
+
+        let config = Config::builder().diary_path(filepath).build();
+
+        add(&opts, &config, &entry_date, test_string_getter).unwrap();
+    }
 }
