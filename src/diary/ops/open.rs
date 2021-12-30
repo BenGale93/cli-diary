@@ -7,7 +7,7 @@ use std::{io, path::PathBuf};
 
 use chrono::prelude::*;
 
-use crate::{errors::DiaryError, Config};
+use crate::{diary_file::DiaryFile, errors::DiaryError, Config};
 
 /// The options available to the open command.
 pub struct OpenFileOptions {
@@ -30,7 +30,7 @@ pub fn open(
 ) -> Result<(), DiaryError> {
     config.initialised()?;
 
-    let entry_path = config.get_entry_path(&opts.entry_date);
+    let entry_path = config.file_type()?.get_entry_path(&opts.entry_date);
 
     if !entry_path.exists() {
         return Err(DiaryError::NoEntry { source: None });
@@ -56,6 +56,7 @@ mod test {
     use tempfile::tempdir;
 
     use crate::{
+        diary_file::DiaryFile,
         ops::new::{new, NewOptions},
         utils::editing::test_string_getter,
         Config,
@@ -86,7 +87,7 @@ mod test {
 
         open(&opts, &config, test_user_input).unwrap();
 
-        let entry_path = config.get_entry_path(&entry_date);
+        let entry_path = config.file_type().unwrap().get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 

@@ -6,7 +6,7 @@ use std::{fs::File, io, io::Write};
 
 use chrono::prelude::*;
 
-use crate::{errors::DiaryError, utils::editing, Config};
+use crate::{diary_file::DiaryFile, errors::DiaryError, utils::editing, Config};
 
 /// The options available to the add command.
 pub struct AddOptions<'a> {
@@ -68,7 +68,7 @@ pub fn add(
     date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
-    let file_result = config.get_entry_file(date);
+    let file_result = config.file_type()?.get_entry(date);
 
     let content = string_getter("".to_string())?;
 
@@ -82,6 +82,7 @@ mod test {
     use tempfile::tempdir;
 
     use crate::{
+        diary_file::DiaryFile,
         ops::{
             add::{add, AddOptions},
             new::{new, NewOptions},
@@ -104,7 +105,7 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        let entry_path = config.get_entry_path(&entry_date);
+        let entry_path = config.file_type().unwrap().get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 
@@ -126,7 +127,7 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        let entry_path = config.get_entry_path(&entry_date);
+        let entry_path = config.file_type().unwrap().get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 

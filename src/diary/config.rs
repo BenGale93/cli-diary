@@ -1,15 +1,14 @@
-use std::{fs::File, io, path::PathBuf};
-
-use chrono::prelude::*;
+use std::path::PathBuf;
 
 use crate::{
+    diary_file::{self, DiaryFile},
     errors::DiaryError,
-    utils::file_system::{get_entry, get_entry_path},
 };
 
 pub struct ConfigBuilder {
     diary_path: PathBuf,
     prefix: String,
+    file_type: String,
 }
 
 impl ConfigBuilder {
@@ -17,6 +16,7 @@ impl ConfigBuilder {
         Self {
             diary_path: PathBuf::from(""),
             prefix: String::from("diary"),
+            file_type: String::from("md"),
         }
     }
 
@@ -28,10 +28,22 @@ impl ConfigBuilder {
         self.prefix = prefix.into();
         self
     }
+    pub fn file_type(mut self, file_type: impl Into<String>) -> Self {
+        self.file_type = file_type.into();
+        self
+    }
 
     pub fn build(self) -> Config {
-        let Self { diary_path, prefix } = self;
-        Config { diary_path, prefix }
+        let Self {
+            diary_path,
+            prefix,
+            file_type,
+        } = self;
+        Config {
+            diary_path,
+            prefix,
+            file_type,
+        }
     }
 }
 
@@ -40,6 +52,7 @@ impl ConfigBuilder {
 pub struct Config {
     diary_path: PathBuf,
     prefix: String,
+    file_type: String,
 }
 
 impl Config {
@@ -55,19 +68,22 @@ impl Config {
         &self.prefix
     }
 
+    pub fn file_type(&self) -> Result<impl diary_file::DiaryFile, DiaryError> {
+        match self.file_type.as_str() {
+            "md" => Ok(diary_file::MarkdownDiary::new(
+                self.prefix.to_string(),
+                self.diary_path.to_path_buf(),
+            )),
+            _ => Err(DiaryError::BadFileType),
+        }
+    }
+
     pub fn initialised(&self) -> Result<(), DiaryError> {
         if self.diary_path == PathBuf::from("") {
             Err(DiaryError::UnInitialised { source: None })
         } else {
             Ok(())
         }
-    }
-    pub fn get_entry_path(&self, date: &Date<Local>) -> PathBuf {
-        get_entry_path(self.diary_path.to_path_buf(), date, &self.prefix)
-    }
-
-    pub fn get_entry_file(&self, date: &Date<Local>) -> io::Result<File> {
-        get_entry(self.diary_path.to_path_buf(), date, &self.prefix)
     }
 }
 

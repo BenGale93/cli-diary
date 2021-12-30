@@ -1,6 +1,5 @@
 use std::{
-    fs::{create_dir, File, OpenOptions},
-    io,
+    fs::create_dir,
     path::{Path, PathBuf},
 };
 
@@ -25,28 +24,4 @@ pub fn create_month_folder(path: &Path) -> Result<(), DiaryError> {
     } else {
         Ok(())
     }
-}
-
-pub fn create_entry_name(prefix: &str, date: &Date<Local>) -> PathBuf {
-    let entry_suffix = date.format("%Y-%m-%d").to_string();
-    PathBuf::from(format!("{}_{}.md", prefix, entry_suffix))
-}
-
-pub fn get_entry_path(path: PathBuf, date: &Date<Local>, prefix: &str) -> PathBuf {
-    let mut entry_path = month_folder(path, date);
-    let entry_name = create_entry_name(prefix, date);
-    entry_path.push(entry_name);
-    entry_path
-}
-
-/// Gets a diary entry file.
-///
-/// # Arguments
-///
-/// * `path` - The path to the diary entry.
-/// * `date` - The date of the entry.
-/// * `prefix` - The filename prefix.
-pub fn get_entry(path: PathBuf, date: &Date<Local>, prefix: &str) -> io::Result<File> {
-    let entry_path = get_entry_path(path, date, prefix);
-    return OpenOptions::new().append(true).open(entry_path);
 }
