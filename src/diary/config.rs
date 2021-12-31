@@ -1,9 +1,6 @@
 use std::path::PathBuf;
 
-use crate::{
-    diary_file::{self, DiaryFile},
-    errors::DiaryError,
-};
+use crate::errors::DiaryError;
 
 pub struct ConfigBuilder {
     diary_path: PathBuf,
@@ -68,14 +65,8 @@ impl Config {
         &self.prefix
     }
 
-    pub fn file_type(&self) -> Result<impl diary_file::DiaryFile, DiaryError> {
-        match self.file_type.as_str() {
-            "md" => Ok(diary_file::MarkdownDiary::new(
-                self.prefix.to_string(),
-                self.diary_path.to_path_buf(),
-            )),
-            _ => Err(DiaryError::BadFileType),
-        }
+    pub fn file_type(&self) -> &String {
+        &self.file_type
     }
 
     pub fn initialised(&self) -> Result<(), DiaryError> {

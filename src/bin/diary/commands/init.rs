@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use clap::{App, Arg, ArgMatches, Error, ErrorKind, SubCommand};
 use diary::ops::{init, InitOptions};
-use diary::{CliResult, Config};
+use diary::{diary_file::process_file_type, CliResult, Config};
 
 pub fn cli() -> App<'static, 'static> {
     SubCommand::with_name("init")
@@ -27,6 +27,12 @@ pub fn cli() -> App<'static, 'static> {
                 .long("prefix")
                 .takes_value(true)
                 .help("Sets the diary files name prefix."),
+        )
+        .arg(
+            Arg::with_name("filetype")
+                .long("filetype")
+                .takes_value(true)
+                .help("Sets the file type to use for diary entries."),
         )
 }
 
@@ -52,21 +58,35 @@ fn args_to_init_ops(args: &ArgMatches<'_>) -> Result<init::InitOptions, Error> {
     })
 }
 
+fn build_new_config(
+    diary_path: PathBuf,
+    prefix: Option<String>,
+    processed_file_type: Option<impl AsRef<str>>,
+) -> Config {
+    let new_cfg_builder = Config::builder().diary_path(
+        canonicalize(diary_path).expect("Attempted to canonicalize a path that does not exist."),
+    );
+
+    let new_cfg_builder = match prefix {
+        None => new_cfg_builder,
+        Some(prefix) => new_cfg_builder.prefix(prefix),
+    };
+
+    match processed_file_type {
+        None => new_cfg_builder,
+        Some(file_type) => new_cfg_builder.file_type(file_type.as_ref()),
+    }
+    .build()
+}
+
 pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
+    let processed_file_type = process_file_type(args.value_of("filetype"))?;
+
     let opts = args_to_init_ops(args)?;
     let path = init::init(&opts, &config)?;
 
-    let new_prefix = match opts.prefix {
-        Some(prefix) => prefix,
-        None => config.prefix().to_string(),
-    };
+    let new_cfg = build_new_config(path, opts.prefix, processed_file_type);
 
-    let new_cfg = Config::builder()
-        .diary_path(
-            canonicalize(path).expect("Attempted to canonicalize a path that does not exist."),
-        )
-        .prefix(new_prefix)
-        .build();
     confy::store("diary", new_cfg)?;
     println!("Initialised diary.");
     Ok(())

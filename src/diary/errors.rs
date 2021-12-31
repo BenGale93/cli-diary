@@ -79,7 +79,7 @@ pub enum DiaryError {
     #[error("No content provided, aborting.")]
     NoContent,
 
-    #[error("Unsupported file types.")]
+    #[error("Unsupported file type.")]
     BadFileType,
 
     #[error("Failed to init git repo.")]

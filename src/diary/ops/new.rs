@@ -37,12 +37,13 @@ pub fn new(
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
     config.initialised()?;
-    let file_type = config.file_type()?;
+
+    let diary_file = DiaryFile::from_config(config)?;
 
     let mut new_entry_path = file_system::month_folder(config.diary_path().to_path_buf(), date);
     file_system::create_month_folder(&new_entry_path)?;
 
-    let entry_name = file_type.file_name(date);
+    let entry_name = diary_file.file_name(date);
 
     new_entry_path.push(entry_name);
     let result = OpenOptions::new()
@@ -52,7 +53,7 @@ pub fn new(
 
     let mut file = match result {
         Ok(mut file) => {
-            editing::add_user_content_to_file(&mut file, file_type.title(date))?;
+            editing::add_user_content_to_file(&mut file, diary_file.file_type().title(date))?;
             file
         }
         Err(e) => return Err(e.into()),
@@ -91,7 +92,9 @@ mod test {
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 
-        let test_path = config.file_type().unwrap().get_entry_path(&date);
+        let diary_file = DiaryFile::from_config(&config).unwrap();
+
+        let test_path = diary_file.get_entry_path(&date);
 
         assert!(test_path.exists());
     }
@@ -152,7 +155,9 @@ mod test {
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 
-        let test_path = config.file_type().unwrap().get_entry_path(&date);
+        let diary_file = DiaryFile::from_config(&config).unwrap();
+
+        let test_path = diary_file.get_entry_path(&date);
 
         let content = fs::read_to_string(test_path).unwrap();
         assert!(content.contains("Test content"));

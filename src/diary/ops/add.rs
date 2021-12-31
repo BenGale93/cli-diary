@@ -20,7 +20,7 @@ pub struct AddOptions<'a> {
 ///
 /// * `file_result` The prospective file to add the content to.
 /// * `content` The content to add to the file above.
-/// * `tag` The optional tag to place above the content, header 2 markdown.
+/// * `tag` The optional tag to place above the content.
 ///
 /// # Errors
 ///
@@ -29,7 +29,7 @@ pub struct AddOptions<'a> {
 fn add_content(
     file_result: io::Result<File>,
     content: String,
-    tag: Option<&str>,
+    tag: Option<String>,
 ) -> Result<(), DiaryError> {
     if content.is_empty() {
         return Err(DiaryError::NoContent);
@@ -38,8 +38,7 @@ fn add_content(
     match file_result {
         Ok(mut file) => {
             if let Some(tag) = tag {
-                let markdown_tag = format!("## {}\n\n", tag);
-                file.write_all(markdown_tag.as_bytes())?;
+                file.write_all(tag.as_bytes())?;
             }
             editing::add_user_content_to_file(&mut file, content)?;
             Ok(())
@@ -68,11 +67,16 @@ pub fn add(
     date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
-    let file_result = config.file_type()?.get_entry(date);
+    let diary_file = DiaryFile::from_config(config)?;
+    let file_result = diary_file.get_entry(date);
 
     let content = string_getter("".to_string())?;
 
-    add_content(file_result, content, opts.tag)
+    let tag_result = opts
+        .tag
+        .map(|tag| diary_file.file_type().tag(tag.to_string()));
+
+    add_content(file_result, content, tag_result)
 }
 
 #[cfg(test)]
@@ -105,7 +109,9 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        let entry_path = config.file_type().unwrap().get_entry_path(&entry_date);
+        let diary_file = DiaryFile::from_config(&config).unwrap();
+
+        let entry_path = diary_file.get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 
@@ -127,7 +133,9 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        let entry_path = config.file_type().unwrap().get_entry_path(&entry_date);
+        let diary_file = DiaryFile::from_config(&config).unwrap();
+
+        let entry_path = diary_file.get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 

@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Added
+
+* Added support for rst diaries. This can be declared when using the `init` function.
+
+### Changed
+
+* Refactored internals to isolate markdown related functions. New structs now deal with
+  file type specific operations.
+
 ## [0.4.0] - 2021-12-28
 
 ### Changed

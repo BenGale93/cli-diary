@@ -30,7 +30,9 @@ pub fn open(
 ) -> Result<(), DiaryError> {
     config.initialised()?;
 
-    let entry_path = config.file_type()?.get_entry_path(&opts.entry_date);
+    let diary_file = DiaryFile::from_config(config)?;
+
+    let entry_path = diary_file.get_entry_path(&opts.entry_date);
 
     if !entry_path.exists() {
         return Err(DiaryError::NoEntry { source: None });
@@ -87,7 +89,9 @@ mod test {
 
         open(&opts, &config, test_user_input).unwrap();
 
-        let entry_path = config.file_type().unwrap().get_entry_path(&entry_date);
+        let diary_file = DiaryFile::from_config(&config).unwrap();
+
+        let entry_path = diary_file.get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 

@@ -59,6 +59,10 @@ diary_path = '/home/user/diary'
 # The prefix assigned to the diary entries filename,
 # e.g. diary_2020-01-01.md
 prefix = 'diary'
+
+# The file types to use for diary entries.
+# Currently supported: md, rst.
+file_type = 'rst'
 ```
 
 ## Usage
