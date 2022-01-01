@@ -2,14 +2,16 @@
 //!
 //! The new module contains functionality relating to the new command,
 //! independent of the CLI.
+use std::fs::OpenOptions;
+
+use chrono::prelude::*;
+
 use crate::{
     diary_file::DiaryFile,
     errors::DiaryError,
     utils::{editing, file_system},
     Config,
 };
-use chrono::prelude::*;
-use std::fs::OpenOptions;
 
 /// The options available to the new command.
 pub struct NewOptions {
@@ -70,14 +72,14 @@ pub fn new(
 mod test {
     use std::{fs, path::PathBuf};
 
-    use crate::{
-        diary_file::DiaryFile, ops::init, utils::editing::test::test_string_getter, Config,
-    };
     use chrono::prelude::*;
     use init::InitOptions;
     use tempfile::tempdir;
 
     use super::{new, NewOptions};
+    use crate::{
+        diary_file::DiaryFile, ops::init, utils::editing::test::test_string_getter, Config,
+    };
 
     #[test]
     fn new_success() {

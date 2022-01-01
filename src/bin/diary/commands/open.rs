@@ -1,9 +1,11 @@
+use std::str::FromStr;
+
 use chrono::{Local, NaiveDate, ParseError, TimeZone};
 use clap::{App, Arg, ArgMatches, SubCommand};
-use diary::ops::open::open;
-use diary::ops::open::OpenFileOptions;
-use diary::{CliResult, Config};
-use std::str::FromStr;
+use diary::{
+    ops::open::{open, OpenFileOptions},
+    CliResult, Config,
+};
 
 pub fn cli() -> App<'static, 'static> {
     SubCommand::with_name("open")

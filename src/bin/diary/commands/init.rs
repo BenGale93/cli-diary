@@ -1,10 +1,12 @@
 extern crate clap;
-use std::fs::canonicalize;
-use std::path::PathBuf;
+use std::{fs::canonicalize, path::PathBuf};
 
 use clap::{App, Arg, ArgMatches, Error, ErrorKind, SubCommand};
-use diary::ops::{init, InitOptions};
-use diary::{diary_file::process_file_type, CliResult, Config};
+use diary::{
+    diary_file::process_file_type,
+    ops::{init, InitOptions},
+    CliResult, Config,
+};
 
 pub fn cli() -> App<'static, 'static> {
     SubCommand::with_name("init")

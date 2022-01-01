@@ -1,8 +1,9 @@
 use chrono::Local;
 use clap::{App, Arg, ArgMatches, SubCommand};
-use diary::ops::add::add;
-use diary::ops::add::AddOptions;
-use diary::{CliResult, Config};
+use diary::{
+    ops::add::{add, AddOptions},
+    CliResult, Config,
+};
 
 pub fn cli() -> App<'static, 'static> {
     SubCommand::with_name("add")

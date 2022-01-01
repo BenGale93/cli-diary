@@ -3,8 +3,9 @@
 //! The init module contains functionality relating to the init command,
 //! independent of the CLI.
 
-use git2::Repository;
 use std::{fs::create_dir_all, path::PathBuf};
+
+use git2::Repository;
 
 use crate::{errors::DiaryError, Config};
 
@@ -94,9 +95,8 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use crate::Config;
-
     use super::{init, InitOptions};
+    use crate::Config;
 
     #[test]
     fn blank_config_valid_path() {

@@ -82,8 +82,9 @@ pub fn add(
 
 #[cfg(test)]
 mod test {
-    use chrono::{Local, TimeZone};
     use std::fs;
+
+    use chrono::{Local, TimeZone};
     use tempfile::tempdir;
 
     use crate::{

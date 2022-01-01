@@ -57,14 +57,13 @@ mod test {
     use chrono::{Local, TimeZone};
     use tempfile::tempdir;
 
+    use super::{open, OpenFileOptions};
     use crate::{
         diary_file::DiaryFile,
         ops::new::{new, NewOptions},
         utils::editing::test::test_string_getter,
         Config,
     };
-
-    use super::{open, OpenFileOptions};
 
     fn test_user_input(filepath: PathBuf) -> io::Result<()> {
         let mut file = OpenOptions::new().append(true).open(filepath)?;

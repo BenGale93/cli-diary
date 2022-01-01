@@ -1,13 +1,15 @@
-use crate::errors::DiaryError;
-use crate::utils::date;
-use crate::utils::file_system;
-use crate::Config;
-use chrono::prelude::*;
-use std::path::Path;
-use std::path::PathBuf;
 use std::{
     fs::{File, OpenOptions},
     io,
+    path::{Path, PathBuf},
+};
+
+use chrono::prelude::*;
+
+use crate::{
+    errors::DiaryError,
+    utils::{date, file_system},
+    Config,
 };
 
 pub trait EntryFileType {
@@ -110,7 +112,7 @@ pub struct DiaryFile {
 
 impl DiaryFile {
     pub fn new(prefix: &str, diary_path: &Path, file_type: &str) -> Result<Box<Self>, DiaryError> {
-        let entry_file_type = entry_file_type_from_string(file_type.to_string())?;
+        let entry_file_type = entry_file_type_from_string(file_type)?;
         Ok(Box::new(Self {
             prefix: prefix.to_string(),
             diary_path: diary_path.to_path_buf(),
@@ -159,12 +161,11 @@ mod tests {
 
     use chrono::prelude::*;
 
-    use crate::Config;
-
     use super::{
         entry_file_type_from_string, process_file_type, DiaryFile, EntryFileType, MarkdownDiary,
         RstDiary,
     };
+    use crate::Config;
 
     #[test]
 
