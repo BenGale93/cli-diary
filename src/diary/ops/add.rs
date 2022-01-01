@@ -6,7 +6,12 @@ use std::{fs::File, io, io::Write};
 
 use chrono::prelude::*;
 
-use crate::{diary_file::DiaryFile, errors::DiaryError, utils::editing, Config};
+use crate::{
+    entry::{Entry, EntryContent},
+    errors::DiaryError,
+    utils::editing,
+    Config,
+};
 
 /// The options available to the add command.
 pub struct AddOptions<'a> {
@@ -68,14 +73,14 @@ pub fn add(
     date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
-    let diary_file = DiaryFile::from_config(config)?;
-    let file_result = diary_file.get_entry(date);
+    let diary_entry = Entry::from_config(config)?;
+    let file_result = diary_entry.get_entry(date);
 
     let content = string_getter("".to_string())?;
 
     let tag_result = opts
         .tag
-        .map(|tag| diary_file.file_type().tag(tag.to_string()));
+        .map(|tag| diary_entry.file_type().tag(tag.to_string()));
 
     add_content(file_result, content, tag_result)
 }
@@ -88,7 +93,7 @@ mod test {
     use tempfile::tempdir;
 
     use crate::{
-        diary_file::DiaryFile,
+        entry::Entry,
         ops::{
             add::{add, AddOptions},
             new::{new, NewOptions},
@@ -111,7 +116,7 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        let diary_file = DiaryFile::from_config(&config).unwrap();
+        let diary_file = Entry::from_config(&config).unwrap();
 
         let entry_path = diary_file.get_entry_path(&entry_date);
 
@@ -135,7 +140,7 @@ mod test {
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
-        let diary_file = DiaryFile::from_config(&config).unwrap();
+        let diary_file = Entry::from_config(&config).unwrap();
 
         let entry_path = diary_file.get_entry_path(&entry_date);
 

@@ -7,7 +7,7 @@ use std::{io, path::PathBuf};
 
 use chrono::prelude::*;
 
-use crate::{diary_file::DiaryFile, errors::DiaryError, Config};
+use crate::{entry::Entry, errors::DiaryError, Config};
 
 /// The options available to the open command.
 pub struct OpenFileOptions {
@@ -30,9 +30,9 @@ pub fn open(
 ) -> Result<(), DiaryError> {
     config.initialised()?;
 
-    let diary_file = DiaryFile::from_config(config)?;
+    let diary_entry = Entry::from_config(config)?;
 
-    let entry_path = diary_file.get_entry_path(&opts.entry_date);
+    let entry_path = diary_entry.get_entry_path(&opts.entry_date);
 
     if !entry_path.exists() {
         return Err(DiaryError::NoEntry { source: None });
@@ -59,7 +59,7 @@ mod test {
 
     use super::{open, OpenFileOptions};
     use crate::{
-        diary_file::DiaryFile,
+        entry::Entry,
         ops::new::{new, NewOptions},
         utils::editing::test::test_string_getter,
         Config,
@@ -88,7 +88,7 @@ mod test {
 
         open(&opts, &config, test_user_input).unwrap();
 
-        let diary_file = DiaryFile::from_config(&config).unwrap();
+        let diary_file = Entry::from_config(&config).unwrap();
 
         let entry_path = diary_file.get_entry_path(&entry_date);
 

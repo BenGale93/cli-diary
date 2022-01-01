@@ -30,6 +30,7 @@ serde_derive = "1.0.132"
 serde = "1.0.132"
 thiserror = "1.0.30"
 git2 = "0.13"
+enum_dispatch = "0.3.7"
 
 [dev-dependencies]
 tempfile = "3.2.0"

@@ -6,7 +6,7 @@ extern crate serde_derive;
 extern crate serde;
 
 mod config;
-pub mod diary_file;
+pub mod entry;
 pub mod errors;
 pub mod ops;
 pub mod utils;

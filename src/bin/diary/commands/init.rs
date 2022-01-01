@@ -3,7 +3,7 @@ use std::{fs::canonicalize, path::PathBuf};
 
 use clap::{App, Arg, ArgMatches, Error, ErrorKind, SubCommand};
 use diary::{
-    diary_file::process_file_type,
+    entry::process_file_type,
     ops::{init, InitOptions},
     CliResult, Config,
 };

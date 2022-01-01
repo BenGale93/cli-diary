@@ -5,6 +5,7 @@ use std::{
 };
 
 use chrono::prelude::*;
+use enum_dispatch::enum_dispatch;
 
 use crate::{
     errors::DiaryError,
@@ -12,16 +13,17 @@ use crate::{
     Config,
 };
 
-pub trait EntryFileType {
-    fn title_elements(&self, date: &Date<Local>) -> (String, String, String) {
-        let start_title = date.format("%A %-e").to_string();
-        let date_superscript = date::date_superscript(date.day()).to_string();
-        let end_title = date.format("%B %Y").to_string();
+fn title_elements(date: &Date<Local>) -> (String, String, String) {
+    let start_title = date.format("%A %-e").to_string();
+    let date_superscript = date::date_superscript(date.day()).to_string();
+    let end_title = date.format("%B %Y").to_string();
 
-        (start_title, date_superscript, end_title)
-    }
+    (start_title, date_superscript, end_title)
+}
 
-    fn get_extension(&self) -> &'static str;
+#[enum_dispatch]
+pub trait EntryContent {
+    fn extension(&self) -> &'static str;
 
     fn title(&self, date: &Date<Local>) -> String;
 
@@ -30,13 +32,13 @@ pub trait EntryFileType {
 
 pub struct MarkdownDiary {}
 
-impl EntryFileType for MarkdownDiary {
-    fn get_extension(&self) -> &'static str {
+impl EntryContent for MarkdownDiary {
+    fn extension(&self) -> &'static str {
         "md"
     }
 
     fn title(&self, date: &Date<Local>) -> String {
-        let (start_title, date_superscript, end_title) = self.title_elements(date);
+        let (start_title, date_superscript, end_title) = title_elements(date);
 
         format!(
             "# {}<sup>{}</sup> {}\n\n",
@@ -50,13 +52,13 @@ impl EntryFileType for MarkdownDiary {
 }
 pub struct RstDiary {}
 
-impl EntryFileType for RstDiary {
-    fn get_extension(&self) -> &'static str {
+impl EntryContent for RstDiary {
+    fn extension(&self) -> &'static str {
         "rst"
     }
 
     fn title(&self, date: &Date<Local>) -> String {
-        let (start_title, date_superscript, end_title) = self.title_elements(date);
+        let (start_title, date_superscript, end_title) = title_elements(date);
 
         let first_line = format!(
             "{}\\ :sup:`{}` {}",
@@ -78,12 +80,16 @@ impl EntryFileType for RstDiary {
     }
 }
 
-fn entry_file_type_from_string(
-    file_type: impl AsRef<str>,
-) -> Result<Box<dyn EntryFileType>, DiaryError> {
+#[enum_dispatch(EntryContent)]
+pub enum EntryFileType {
+    MarkdownDiary,
+    RstDiary,
+}
+
+fn entry_file_type_from_string(file_type: impl AsRef<str>) -> Result<EntryFileType, DiaryError> {
     match file_type.as_ref() {
-        "md" => Ok(Box::new(MarkdownDiary {})),
-        "rst" => Ok(Box::new(RstDiary {})),
+        "md" => Ok(MarkdownDiary {}.into()),
+        "rst" => Ok(RstDiary {}.into()),
         _ => Err(DiaryError::BadFileType),
     }
 }
@@ -104,13 +110,13 @@ pub fn process_file_type(
     }
 }
 
-pub struct DiaryFile {
+pub struct Entry {
     prefix: String,
     diary_path: PathBuf,
-    file_type: Box<dyn EntryFileType>,
+    file_type: EntryFileType,
 }
 
-impl DiaryFile {
+impl Entry {
     pub fn new(prefix: &str, diary_path: &Path, file_type: &str) -> Result<Box<Self>, DiaryError> {
         let entry_file_type = entry_file_type_from_string(file_type)?;
         Ok(Box::new(Self {
@@ -121,7 +127,7 @@ impl DiaryFile {
     }
 
     pub fn from_config(cfg: &Config) -> Result<Box<Self>, DiaryError> {
-        DiaryFile::new(cfg.prefix(), cfg.diary_path(), cfg.file_type())
+        Entry::new(cfg.prefix(), cfg.diary_path(), cfg.file_type())
     }
 
     pub fn prefix(&self) -> &String {
@@ -130,8 +136,8 @@ impl DiaryFile {
     pub fn diary_path(&self) -> PathBuf {
         self.diary_path.to_path_buf()
     }
-    pub fn file_type(&self) -> &dyn EntryFileType {
-        self.file_type.as_ref()
+    pub fn file_type(&self) -> &EntryFileType {
+        &self.file_type
     }
     pub fn file_name(&self, date: &Date<Local>) -> PathBuf {
         let entry_suffix = date.format("%Y-%m-%d").to_string();
@@ -139,7 +145,7 @@ impl DiaryFile {
             "{}_{}.{}",
             self.prefix,
             entry_suffix,
-            self.file_type.get_extension()
+            self.file_type.extension()
         );
         PathBuf::from(file_name)
     }
@@ -162,7 +168,7 @@ mod tests {
     use chrono::prelude::*;
 
     use super::{
-        entry_file_type_from_string, process_file_type, DiaryFile, EntryFileType, MarkdownDiary,
+        entry_file_type_from_string, process_file_type, Entry, EntryContent, MarkdownDiary,
         RstDiary,
     };
     use crate::Config;
@@ -172,11 +178,11 @@ mod tests {
     fn get_extension() {
         let entry_file = entry_file_type_from_string("rst").unwrap();
 
-        assert_eq!(entry_file.get_extension(), "rst");
+        assert_eq!(entry_file.extension(), "rst");
 
         let entry_file = entry_file_type_from_string("md").unwrap();
 
-        assert_eq!(entry_file.get_extension(), "md")
+        assert_eq!(entry_file.extension(), "md")
     }
 
     #[test]
@@ -236,9 +242,9 @@ mod tests {
     fn diary_file_from_config() {
         let cfg = Config::builder().file_type("md").build();
 
-        let diary_file = DiaryFile::from_config(&cfg).unwrap();
+        let diary_file = Entry::from_config(&cfg).unwrap();
 
-        assert_eq!(diary_file.file_type().get_extension(), "md");
+        assert_eq!(diary_file.file_type().extension(), "md");
         assert_eq!(diary_file.diary_path(), PathBuf::from(""));
         assert_eq!(diary_file.prefix(), "diary")
     }

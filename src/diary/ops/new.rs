@@ -7,7 +7,7 @@ use std::fs::OpenOptions;
 use chrono::prelude::*;
 
 use crate::{
-    diary_file::DiaryFile,
+    entry::{Entry, EntryContent},
     errors::DiaryError,
     utils::{editing, file_system},
     Config,
@@ -41,12 +41,12 @@ pub fn new(
 ) -> Result<(), DiaryError> {
     config.initialised()?;
 
-    let diary_file = DiaryFile::from_config(config)?;
+    let diary_entry = Entry::from_config(config)?;
 
     let mut new_entry_path = file_system::month_folder(config.diary_path().to_path_buf(), date);
     file_system::create_month_folder(&new_entry_path)?;
 
-    let entry_name = diary_file.file_name(date);
+    let entry_name = diary_entry.file_name(date);
 
     new_entry_path.push(entry_name);
     let result = OpenOptions::new()
@@ -56,7 +56,7 @@ pub fn new(
 
     let mut file = match result {
         Ok(mut file) => {
-            editing::add_user_content_to_file(&mut file, diary_file.file_type().title(date))?;
+            editing::add_user_content_to_file(&mut file, diary_entry.file_type().title(date))?;
             file
         }
         Err(e) => return Err(e.into()),
@@ -77,9 +77,7 @@ mod test {
     use tempfile::tempdir;
 
     use super::{new, NewOptions};
-    use crate::{
-        diary_file::DiaryFile, ops::init, utils::editing::test::test_string_getter, Config,
-    };
+    use crate::{entry::Entry, ops::init, utils::editing::test::test_string_getter, Config};
 
     #[test]
     fn new_success() {
@@ -97,7 +95,7 @@ mod test {
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 
-        let diary_file = DiaryFile::from_config(&config).unwrap();
+        let diary_file = Entry::from_config(&config).unwrap();
 
         let test_path = diary_file.get_entry_path(&date);
 
@@ -160,7 +158,7 @@ mod test {
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 
-        let diary_file = DiaryFile::from_config(&config).unwrap();
+        let diary_file = Entry::from_config(&config).unwrap();
 
         let test_path = diary_file.get_entry_path(&date);
 
