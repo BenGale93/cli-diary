@@ -5,6 +5,11 @@ pub fn builtin() -> Vec<App<'static, 'static>> {
     vec![init::cli(), new::cli(), add::cli(), open::cli()]
 }
 
+pub mod add;
+pub mod init;
+pub mod new;
+pub mod open;
+
 pub fn builtin_exec(cmd: &str) -> Option<fn(Config, &ArgMatches<'_>) -> diary::CliResult> {
     let f = match cmd {
         "init" => init::exec,
@@ -15,8 +20,3 @@ pub fn builtin_exec(cmd: &str) -> Option<fn(Config, &ArgMatches<'_>) -> diary::C
     };
     Some(f)
 }
-
-pub mod add;
-pub mod init;
-pub mod new;
-pub mod open;
