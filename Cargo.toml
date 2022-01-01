@@ -26,10 +26,10 @@ chrono = "0.4.19"
 edit = "0.1.3"
 anyhow = "1.0.52"
 confy = "0.4.0"
-serde_derive = "1.0.132"
-serde = "1.0.132"
+serde_derive = "1.0.133"
+serde = "1.0.133"
 thiserror = "1.0.30"
-git2 = "0.13"
+git2 = "0.13.25"
 enum_dispatch = "0.3.7"
 
 [dev-dependencies]
