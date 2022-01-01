@@ -91,7 +91,7 @@ mod test {
             add::{add, AddOptions},
             new::{new, NewOptions},
         },
-        utils::editing::{test_empty_string_getter, test_string_getter},
+        utils::editing::test::{test_empty_string_getter, test_string_getter},
         Config,
     };
     #[test]

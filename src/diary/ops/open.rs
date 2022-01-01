@@ -60,7 +60,7 @@ mod test {
     use crate::{
         diary_file::DiaryFile,
         ops::new::{new, NewOptions},
-        utils::editing::test_string_getter,
+        utils::editing::test::test_string_getter,
         Config,
     };
 

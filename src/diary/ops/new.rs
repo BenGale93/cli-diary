@@ -69,7 +69,9 @@ pub fn new(
 mod test {
     use std::{fs, path::PathBuf};
 
-    use crate::{diary_file::DiaryFile, ops::init, utils::editing::test_string_getter, Config};
+    use crate::{
+        diary_file::DiaryFile, ops::init, utils::editing::test::test_string_getter, Config,
+    };
     use chrono::prelude::*;
     use init::InitOptions;
     use tempfile::tempdir;
