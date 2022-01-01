@@ -57,6 +57,7 @@ fn add_content(
 /// * `opts` - The options available to the add function.
 /// * `config` - The diary config file.
 /// * `date` - The date of the entry to add to.
+/// * `string_getter` - The function that obtains the string to add to the file.
 ///
 /// # Returns
 ///

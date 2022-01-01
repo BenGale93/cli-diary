@@ -24,6 +24,7 @@ pub struct NewOptions {
 /// * `opts` - The options passed by the user at runtime.
 /// * `config` - The contents of the config file.
 /// * `date` - The date for which to create the new entry.
+/// * `string_getter` - The function that obtains the string to add to the file.
 ///
 /// # Returns
 ///
