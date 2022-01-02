@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Refactored internals to isolate markdown related functions. New structs now deal with
   file type specific operations.
+* Functions intended just for testing are placed inside a test submodule.
+* Added enum_dispatch as a dependency and changed how different diary entry file types are handled.
 
 ## [0.4.0] - 2021-12-28
 
