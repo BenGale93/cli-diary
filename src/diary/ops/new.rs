@@ -7,10 +7,10 @@ use std::fs::OpenOptions;
 use chrono::prelude::*;
 
 use crate::{
+    config::Config,
     entry::{Entry, EntryContent},
     errors::DiaryError,
     utils::{editing, file_system},
-    Config,
 };
 
 /// The options available to the new command.
@@ -77,7 +77,9 @@ mod test {
     use tempfile::tempdir;
 
     use super::{new, NewOptions};
-    use crate::{entry::Entry, ops::init, utils::editing::test::test_string_getter, Config};
+    use crate::{
+        config::Config, entry::Entry, ops::init, utils::editing::test::test_string_getter,
+    };
 
     #[test]
     fn new_success() {

@@ -8,9 +8,9 @@ use chrono::prelude::*;
 use enum_dispatch::enum_dispatch;
 
 use crate::{
+    config::Config,
     errors::DiaryError,
     utils::{date, file_system},
-    Config,
 };
 
 fn title_elements(date: &Date<Local>) -> (String, String, String) {
@@ -171,7 +171,7 @@ mod tests {
         entry_file_type_from_string, process_file_type, Entry, EntryContent, MarkdownDiary,
         RstDiary,
     };
-    use crate::Config;
+    use crate::config::Config;
 
     #[test]
 

@@ -2,8 +2,9 @@ extern crate clap;
 use chrono::Local;
 use clap::{App, Arg, ArgMatches, SubCommand};
 use diary::{
+    config::ConfigManager,
     ops::new::{new, NewOptions},
-    CliResult, Config,
+    CliResult,
 };
 
 pub fn cli() -> App<'static, 'static> {
@@ -22,10 +23,10 @@ fn args_to_new_opts(args: &ArgMatches<'_>) -> NewOptions {
     NewOptions { open }
 }
 
-pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
+pub fn exec(config_manager: ConfigManager, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_new_opts(args);
     let date = Local::today();
-    new(&opts, &config, &date, edit::edit)?;
+    new(&opts, config_manager.config(), &date, edit::edit)?;
     println!("Created today's entry.");
     Ok(())
 }

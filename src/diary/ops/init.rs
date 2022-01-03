@@ -7,7 +7,7 @@ use std::{fs::create_dir_all, path::PathBuf};
 
 use git2::Repository;
 
-use crate::{errors::DiaryError, Config};
+use crate::{config::Config, errors::DiaryError};
 
 /// The options available to the init command.
 pub struct InitOptions {
@@ -96,7 +96,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::{init, InitOptions};
-    use crate::Config;
+    use crate::config::Config;
 
     #[test]
     fn blank_config_valid_path() {

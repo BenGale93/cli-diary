@@ -3,8 +3,9 @@ use std::str::FromStr;
 use chrono::{Local, NaiveDate, ParseError, TimeZone};
 use clap::{App, Arg, ArgMatches, SubCommand};
 use diary::{
+    config::ConfigManager,
     ops::open::{open, OpenFileOptions},
-    CliResult, Config,
+    CliResult,
 };
 
 pub fn cli() -> App<'static, 'static> {
@@ -30,9 +31,9 @@ fn args_to_add_opts(args: &ArgMatches<'_>) -> Result<OpenFileOptions, ParseError
     Ok(OpenFileOptions { entry_date })
 }
 
-pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
+pub fn exec(config_manager: ConfigManager, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_add_opts(args)?;
-    open(&opts, &config, edit::edit_file)?;
+    open(&opts, config_manager.config(), edit::edit_file)?;
     println!("Opened diary entry.");
     Ok(())
 }

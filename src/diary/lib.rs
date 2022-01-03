@@ -5,11 +5,10 @@ extern crate confy;
 extern crate serde_derive;
 extern crate serde;
 
-mod config;
+pub mod config;
 pub mod entry;
 pub mod errors;
 pub mod ops;
 pub mod utils;
-pub use config::Config;
 
 pub type CliResult = Result<(), errors::CliError>;

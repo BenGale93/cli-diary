@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   file type specific operations.
 * Functions intended just for testing are placed inside a test submodule.
 * Added enum_dispatch as a dependency and changed how different diary entry file types are handled.
+* Changed how configs are handled so a specific config can be passed on the CLI.
 
 ## [0.4.0] - 2021-12-28
 

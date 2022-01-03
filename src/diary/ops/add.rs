@@ -7,10 +7,10 @@ use std::{fs::File, io, io::Write};
 use chrono::prelude::*;
 
 use crate::{
+    config::Config,
     entry::{Entry, EntryContent},
     errors::DiaryError,
     utils::editing,
-    Config,
 };
 
 /// The options available to the add command.
@@ -93,13 +93,13 @@ mod test {
     use tempfile::tempdir;
 
     use crate::{
+        config::Config,
         entry::Entry,
         ops::{
             add::{add, AddOptions},
             new::{new, NewOptions},
         },
         utils::editing::test::{test_empty_string_getter, test_string_getter},
-        Config,
     };
     #[test]
     fn add_no_tag() {

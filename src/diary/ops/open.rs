@@ -7,7 +7,7 @@ use std::{io, path::PathBuf};
 
 use chrono::prelude::*;
 
-use crate::{entry::Entry, errors::DiaryError, Config};
+use crate::{config::Config, entry::Entry, errors::DiaryError};
 
 /// The options available to the open command.
 pub struct OpenFileOptions {
@@ -59,10 +59,10 @@ mod test {
 
     use super::{open, OpenFileOptions};
     use crate::{
+        config::Config,
         entry::Entry,
         ops::new::{new, NewOptions},
         utils::editing::test::test_string_getter,
-        Config,
     };
 
     fn test_user_input(filepath: PathBuf) -> io::Result<()> {

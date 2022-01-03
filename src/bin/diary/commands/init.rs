@@ -3,9 +3,10 @@ use std::{fs::canonicalize, path::PathBuf};
 
 use clap::{App, Arg, ArgMatches, Error, ErrorKind, SubCommand};
 use diary::{
+    config::{Config, ConfigManager},
     entry::process_file_type,
     ops::{init, InitOptions},
-    CliResult, Config,
+    CliResult,
 };
 
 pub fn cli() -> App<'static, 'static> {
@@ -81,15 +82,16 @@ fn build_new_config(
     .build()
 }
 
-pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
+pub fn exec(config_manager: ConfigManager, args: &ArgMatches<'_>) -> CliResult {
     let processed_file_type = process_file_type(args.value_of("filetype"))?;
 
     let opts = args_to_init_ops(args)?;
-    let path = init::init(&opts, &config)?;
+    let path = init::init(&opts, config_manager.config())?;
 
     let new_cfg = build_new_config(path, opts.prefix, processed_file_type);
 
-    confy::store("diary", new_cfg)?;
+    config_manager.update_config(new_cfg).write()?;
+
     println!("Initialised diary.");
     Ok(())
 }

@@ -1,8 +1,9 @@
 use chrono::Local;
 use clap::{App, Arg, ArgMatches, SubCommand};
 use diary::{
+    config::ConfigManager,
     ops::add::{add, AddOptions},
-    CliResult, Config,
+    CliResult,
 };
 
 pub fn cli() -> App<'static, 'static> {
@@ -22,10 +23,10 @@ fn args_to_add_opts<'a>(args: &'a ArgMatches<'_>) -> AddOptions<'a> {
     AddOptions { tag }
 }
 
-pub fn exec(config: Config, args: &ArgMatches<'_>) -> CliResult {
+pub fn exec(config_manager: ConfigManager, args: &ArgMatches<'_>) -> CliResult {
     let opts = args_to_add_opts(args);
     let date = Local::today();
-    add(&opts, &config, &date, edit::edit)?;
+    add(&opts, config_manager.config(), &date, edit::edit)?;
     println!("Added content.");
     Ok(())
 }
