@@ -6,3 +6,7 @@ deploy:
 clean:
     @rm diary -rf
     @rm ~/.config/diary/diary.toml
+
+
+coverage:
+    @cargo tarpaulin -v --follow-exec --skip-clean

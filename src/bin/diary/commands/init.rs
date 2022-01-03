@@ -95,25 +95,3 @@ pub fn exec(config_manager: ConfigManager, args: &ArgMatches<'_>) -> CliResult {
     println!("Initialised diary.");
     Ok(())
 }
-
-#[cfg(test)]
-mod tests {
-    use std::path::PathBuf;
-
-    use super::{args_to_init_ops, cli};
-
-    #[test]
-    fn test_with_prefix() {
-        let app = cli();
-
-        let args = app
-            .clone()
-            .get_matches_from(vec!["init", "--prefix", "test"]);
-
-        let opts = args_to_init_ops(&args).unwrap();
-
-        assert!(opts.prefix == Some(String::from("test")));
-        assert!(opts.path == PathBuf::from("."));
-        assert!(!opts.git_repo);
-    }
-}
