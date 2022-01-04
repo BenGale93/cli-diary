@@ -1,7 +1,7 @@
 extern crate clap;
 use std::{fs::canonicalize, path::PathBuf};
 
-use clap::{App, Arg, ArgMatches, Error, ErrorKind, SubCommand};
+use clap::{App, Arg, ArgMatches, Error, ErrorKind};
 use diary::{
     config::{Config, ConfigManager},
     entry::process_file_type,
@@ -9,45 +9,44 @@ use diary::{
     CliResult,
 };
 
-pub fn cli() -> App<'static, 'static> {
-    SubCommand::with_name("init")
+pub fn cli() -> App<'static> {
+    App::new("init")
         .about("Create a new diary folder and config file.")
         .arg(
-            Arg::with_name("path")
+            Arg::new("path")
                 .default_value(".")
                 .help("The location you would like the diary folder to be created."),
         )
         .arg(
-            Arg::with_name("repo")
+            Arg::new("repo")
                 .long("repo")
-                .short("r")
+                .short('r')
                 .required(false)
                 .takes_value(false)
                 .help("Whether or not to initialise a git repo in the diary folder."),
         )
         .arg(
-            Arg::with_name("prefix")
+            Arg::new("prefix")
                 .long("prefix")
                 .takes_value(true)
                 .help("Sets the diary files name prefix."),
         )
         .arg(
-            Arg::with_name("filetype")
+            Arg::new("filetype")
                 .long("filetype")
                 .takes_value(true)
                 .help("Sets the file type to use for diary entries."),
         )
 }
 
-fn args_to_init_ops(args: &ArgMatches<'_>) -> Result<init::InitOptions, Error> {
+fn args_to_init_ops(args: &ArgMatches) -> Result<init::InitOptions, Error> {
     let diary_path = match args.value_of("path") {
         Some(path) => PathBuf::from(path),
         None => {
-            return Err(Error {
-                message: String::from("Value for path argument not found."),
-                kind: ErrorKind::MissingRequiredArgument,
-                info: None,
-            });
+            return Err(Error::raw(
+                ErrorKind::MissingRequiredArgument,
+                String::from("Value for path argument not found."),
+            ));
         }
     };
     let diary_prefix = args.value_of("prefix").map(String::from);
@@ -82,7 +81,7 @@ fn build_new_config(
     .build()
 }
 
-pub fn exec(config_manager: ConfigManager, args: &ArgMatches<'_>) -> CliResult {
+pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let processed_file_type = process_file_type(args.value_of("filetype"))?;
 
     let opts = args_to_init_ops(args)?;
