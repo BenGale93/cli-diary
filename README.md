@@ -87,17 +87,30 @@ contents on the new entry. To make this easier it is recommended you use a CLI
 text editor like nano or vim.
 
 The `add` command also has an optional `--tag` flag which allows you to specify
-a Markdown Heading 2 level tag to place above the entry.
+a level 2 heading tag to automatically place above the entry.
 
 ```bash
 diary new --tag Tip
 ```
+
+```
+Content of the new entry.
+```
+
+Results in:
 
 ```markdown
 ## Tip
 
 Content of the new entry.
 
+```
+
+```rst
+Tip
+^^^
+
+Content of the new entry.
 ```
 
 ### Open Command
