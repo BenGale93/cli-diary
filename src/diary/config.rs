@@ -1,7 +1,5 @@
 use std::path::PathBuf;
 
-use clap::crate_name;
-
 use crate::errors::DiaryError;
 
 pub struct ConfigBuilder {
@@ -115,7 +113,7 @@ impl ConfigManager {
     pub fn read(mut self) -> Result<ConfigManager, confy::ConfyError> {
         let config: Config = match &self.location {
             Some(l) => confy::load_path(l)?,
-            _ => confy::load(crate_name!())?,
+            _ => confy::load("diary")?,
         };
         self.config = config;
 
@@ -125,7 +123,7 @@ impl ConfigManager {
     pub fn write(self) -> Result<(), confy::ConfyError> {
         match self.location {
             Some(l) => confy::store_path(l, self.config),
-            _ => confy::store(crate_name!(), self.config),
+            _ => confy::store("diary", self.config),
         }
     }
 
