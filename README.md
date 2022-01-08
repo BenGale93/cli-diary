@@ -93,7 +93,7 @@ a level 2 heading tag to automatically place above the entry.
 diary new --tag Tip
 ```
 
-```
+```markdown
 Content of the new entry.
 ```
 
