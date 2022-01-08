@@ -28,6 +28,7 @@ pub fn main() -> CliResult {
 
 fn cli() -> App<'static> {
     App::new("diary")
+        .version(env!("CARGO_PKG_VERSION"))
         .arg(
             Arg::new("config")
                 .short('c')
