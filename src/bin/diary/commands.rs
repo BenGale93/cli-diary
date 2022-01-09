@@ -20,3 +20,15 @@ pub fn builtin_exec(cmd: &str) -> Option<fn(ConfigManager, &ArgMatches) -> diary
     };
     Some(f)
 }
+
+#[cfg(test)]
+mod test {
+    use super::builtin_exec;
+
+    #[test]
+    fn test_bad_command() {
+        let cmd_func = builtin_exec("fake");
+
+        assert!(cmd_func.is_none())
+    }
+}
