@@ -73,7 +73,7 @@ pub enum DiaryError {
     #[error(transparent)]
     IOError(#[from] std::io::Error),
 
-    #[error("Today's entry has not yet been created. Use the `new` sub-command.")]
+    #[error("The desired entry has not been found. You can use the `new` command to create today's entry.")]
     NoEntry { source: Option<std::io::Error> },
 
     #[error("No content provided, aborting.")]

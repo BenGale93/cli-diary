@@ -4,12 +4,12 @@ use predicates::prelude::*;
 mod utils;
 
 #[test]
-fn test_add_failure_no_init() -> utils::TestReturn {
+fn test_open_failure_no_init() -> utils::TestReturn {
     let (_, config_path) = utils::create_temp_dir_and_path()?;
 
     let mut cmd = Command::cargo_bin("diary")?;
 
-    cmd.args(["--config", config_path.to_str().unwrap(), "add"]);
+    cmd.args(["--config", config_path.to_str().unwrap(), "open"]);
 
     cmd.assert()
         .failure()
@@ -19,7 +19,7 @@ fn test_add_failure_no_init() -> utils::TestReturn {
 }
 
 #[test]
-fn test_add_failure_no_new() -> utils::TestReturn {
+fn test_open_failure_no_new() -> utils::TestReturn {
     let mut cmd = Command::cargo_bin("diary")?;
 
     let (dir_str, config_path) = utils::create_temp_dir_and_path()?;
@@ -29,7 +29,7 @@ fn test_add_failure_no_new() -> utils::TestReturn {
 
     let mut cmd = Command::cargo_bin("diary")?;
 
-    cmd.args(["--config", config_path.to_str().unwrap(), "add"]);
+    cmd.args(["--config", config_path.to_str().unwrap(), "open"]);
 
     cmd.assert()
         .failure()
