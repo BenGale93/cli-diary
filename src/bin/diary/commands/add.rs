@@ -27,6 +27,6 @@ pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let opts = args_to_add_opts(args);
     let date = Local::today();
     add(&opts, config_manager.config(), &date, edit::edit)?;
-    println!("Added content.");
-    Ok(())
+    println!("Added content."); //uncovered.
+    Ok(()) //uncovered.
 }

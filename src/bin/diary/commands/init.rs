@@ -46,7 +46,7 @@ fn args_to_init_ops(args: &ArgMatches) -> Result<init::InitOptions, Error> {
             return Err(Error::raw(
                 ErrorKind::MissingRequiredArgument,
                 String::from("Value for path argument not found."),
-            ));
+            )); // uncovered.
         }
     };
     let diary_prefix = args.value_of("prefix").map(String::from);

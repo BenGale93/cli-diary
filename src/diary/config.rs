@@ -123,7 +123,7 @@ impl ConfigManager {
     pub fn write(self) -> Result<(), confy::ConfyError> {
         match self.location {
             Some(l) => confy::store_path(l, self.config),
-            _ => confy::store("diary", self.config),
+            _ => confy::store("diary", self.config), // uncovered.
         }
     }
 

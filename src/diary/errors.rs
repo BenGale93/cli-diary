@@ -16,6 +16,7 @@ impl CliError {
         }
     }
 
+    // uncovered.
     pub fn code(code: i32) -> CliError {
         CliError {
             error: None,
@@ -25,12 +26,14 @@ impl CliError {
 }
 
 impl From<anyhow::Error> for CliError {
+    // uncovered.
     fn from(err: anyhow::Error) -> CliError {
         CliError::new(err, 101)
     }
 }
 
 impl From<clap::Error> for CliError {
+    // uncovered.
     fn from(err: clap::Error) -> CliError {
         let code = if err.use_stderr() { 1 } else { 0 };
         CliError::new(err.into(), code)
@@ -38,11 +41,13 @@ impl From<clap::Error> for CliError {
 }
 
 impl From<confy::ConfyError> for CliError {
+    // uncovered.
     fn from(err: confy::ConfyError) -> CliError {
         CliError::new(err.into(), 101)
     }
 }
 impl From<DiaryError> for CliError {
+    // uncovered.
     fn from(err: DiaryError) -> CliError {
         CliError::new(err.into(), 202)
     }
@@ -54,6 +59,7 @@ impl From<ParseError> for CliError {
     }
 }
 impl From<io::Error> for CliError {
+    // uncovered.
     fn from(err: io::Error) -> CliError {
         CliError::new(err.into(), 1)
     }

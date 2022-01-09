@@ -48,6 +48,6 @@ fn execute_subcommand(
     let exec_opt = commands::builtin_exec(cmd);
     match exec_opt {
         Some(exec) => exec(config_manager, subcommand_args),
-        None => Err(errors::CliError::code(1)),
+        None => Err(errors::CliError::code(1)), // uncovered.
     }
 }

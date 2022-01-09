@@ -67,7 +67,7 @@ pub fn add(
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
             return Err(DiaryError::NoEntry { source: Some(e) })
         }
-        Err(e) => return Err(e.into()),
+        Err(e) => return Err(e.into()), // uncovered.
     };
 
     let content = string_getter("".to_string())?;

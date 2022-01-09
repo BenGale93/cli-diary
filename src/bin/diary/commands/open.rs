@@ -34,8 +34,8 @@ fn args_to_open_opts(args: &ArgMatches) -> Result<OpenFileOptions, ParseError> {
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let opts = args_to_open_opts(args)?;
     open(&opts, config_manager.config(), edit::edit_file)?;
-    println!("Opened diary entry.");
-    Ok(())
+    println!("Opened diary entry."); // uncovered
+    Ok(()) // uncovered
 }
 
 #[cfg(test)]

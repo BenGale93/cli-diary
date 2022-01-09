@@ -39,7 +39,7 @@ pub fn open(
     }
 
     match user_input(entry_path) {
-        Err(e) => Err(DiaryError::IOError(e)),
+        Err(e) => Err(DiaryError::IOError(e)), // uncovered.
         _ => Ok(()),
     }
 }

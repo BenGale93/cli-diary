@@ -77,13 +77,13 @@ pub fn init(opts: &InitOptions, config: &Config) -> Result<PathBuf, DiaryError> 
     };
     let path = match create_dir_all(&path) {
         Ok(_) => path,
-        Err(e) => return Err(DiaryError::from(e)),
+        Err(e) => return Err(DiaryError::from(e)), // uncovered.
     };
 
     if opts.git_repo {
         match Repository::init(&path) {
             Ok(_) => (),
-            Err(e) => return Err(DiaryError::from(e)),
+            Err(e) => return Err(DiaryError::from(e)), // uncovered.
         };
     };
     Ok(path)
