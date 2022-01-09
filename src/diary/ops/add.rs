@@ -2,7 +2,7 @@
 //!
 //! The add module contains functionality relating to the add command,
 //! independent of the CLI.
-use std::{fs::File, io, io::Write};
+use std::{fs::File, io::Write};
 
 use chrono::prelude::*;
 
@@ -23,36 +23,23 @@ pub struct AddOptions<'a> {
 ///
 /// # Arguments
 ///
-/// * `file_result` The prospective file to add the content to.
+/// * `file` The file to add the content to.
 /// * `content` The content to add to the file above.
 /// * `tag` The optional tag to place above the content.
 ///
 /// # Errors
 ///
-/// * If `file_result` contains an error.
 /// * If the content provided is empty.
-fn add_content(
-    file_result: io::Result<File>,
-    content: String,
-    tag: Option<String>,
-) -> Result<(), DiaryError> {
+fn add_content(mut file: File, content: String, tag: Option<String>) -> Result<(), DiaryError> {
     if content.is_empty() {
         return Err(DiaryError::NoContent);
     }
 
-    match file_result {
-        Ok(mut file) => {
-            if let Some(tag) = tag {
-                file.write_all(tag.as_bytes())?;
-            }
-            editing::add_user_content_to_file(&mut file, content)?;
-            Ok(())
-        }
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            Err(DiaryError::NoEntry { source: Some(e) })
-        }
-        Err(e) => Err(e.into()),
+    if let Some(tag) = tag {
+        file.write_all(tag.as_bytes())?;
     }
+    editing::add_user_content_to_file(&mut file, content)?;
+    Ok(())
 }
 
 /// Adds user provided content to a diary entry.
@@ -73,8 +60,15 @@ pub fn add(
     date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
+    config.initialised()?;
     let diary_entry = Entry::from_config(config)?;
-    let file_result = diary_entry.get_entry(date);
+    let file = match diary_entry.get_entry(date) {
+        Ok(file) => file,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            return Err(DiaryError::NoEntry { source: Some(e) })
+        }
+        Err(e) => return Err(e.into()),
+    };
 
     let content = string_getter("".to_string())?;
 
@@ -82,7 +76,7 @@ pub fn add(
         .tag
         .map(|tag| diary_entry.file_type().tag(tag.to_string()));
 
-    add_content(file_result, content, tag_result)
+    add_content(file, content, tag_result)
 }
 
 #[cfg(test)]
