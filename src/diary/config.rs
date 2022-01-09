@@ -138,7 +138,7 @@ impl ConfigManager {
 mod tests {
     use std::path::PathBuf;
 
-    use super::Config;
+    use super::{Config, ConfigManager};
 
     #[test]
     fn full_config_build() {
@@ -149,5 +149,14 @@ mod tests {
 
         assert_eq!(cfg.prefix(), "dy");
         assert_eq!(cfg.diary_path(), &PathBuf::from("/home/"))
+    }
+
+    #[test]
+    fn config_manager_with_location() {
+        let location = Some(PathBuf::from("/tmp/"));
+
+        let cfg_manager = ConfigManager::with_location(location.clone());
+
+        assert!(cfg_manager.location().clone() == location)
     }
 }
