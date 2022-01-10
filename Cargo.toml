@@ -33,6 +33,6 @@ git2 = "0.13.25"
 enum_dispatch = "0.3.7"
 
 [dev-dependencies]
-tempfile = "3.2.0"
+tempfile = "3.3.0"
 assert_cmd = "2.0"
 predicates = "2.1"
