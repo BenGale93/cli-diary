@@ -88,6 +88,6 @@ pub enum DiaryError {
     #[error("Unsupported file type.")]
     BadFileType,
 
-    #[error("Failed to init git repo.")]
+    #[error(transparent)]
     GitError(#[from] git2::Error),
 }

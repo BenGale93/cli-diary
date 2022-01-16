@@ -117,6 +117,7 @@ mod test {
         let index = repo.index().unwrap();
         assert_eq!(index.len(), 1)
     }
+
     #[test]
     fn commit_multiple() {
         let dir = tempdir().unwrap().path().to_path_buf();
@@ -166,5 +167,32 @@ mod test {
 
         let index = repo.index().unwrap();
         assert_eq!(index.len(), 2)
+    }
+
+    #[test]
+    #[should_panic(expected = "No such file or directory")]
+    fn commit_no_entry() {
+        let dir = tempdir().unwrap().path().to_path_buf();
+        let diary_dir = dir.join("diary");
+        let config = Config::builder().diary_path(diary_dir).build();
+
+        let other_dir = tempdir().unwrap().path().to_path_buf();
+        let init_opts = InitOptions {
+            path: other_dir,
+            prefix: None,
+            git_repo: true,
+        };
+
+        init(&init_opts, &config).unwrap();
+
+        let entry_date = Local.ymd(2022, 1, 13);
+
+        let opts = CommitOptions {
+            entry_date,
+            message: "Test message".to_string(),
+            push: false,
+        };
+
+        commit(&opts, &config).unwrap();
     }
 }
