@@ -16,8 +16,6 @@ pub fn commit(opts: &CommitOptions, config: &Config) -> Result<(), DiaryError> {
 
     let repo = Repository::open(config.diary_path())?;
 
-    let mut index = repo.index()?;
-
     let diary_entry = Entry::from_config(config)?;
     let entry_path = diary_entry.get_entry_path(&opts.entry_date);
 
@@ -33,7 +31,9 @@ pub fn commit(opts: &CommitOptions, config: &Config) -> Result<(), DiaryError> {
         }
     }
 
+    let mut index = repo.index()?;
     index.add_path(&relative_path)?;
+    index.write()?;
     let oid = index.write_tree()?;
     let signature = Repository::signature(&repo)?;
     let tree = repo.find_tree(oid)?;
