@@ -2,30 +2,30 @@ name: Rust
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-
   full:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Update
-      run: rustup update stable && rustup default stable
-    - name: Add components
-      run: rustup component add rustfmt clippy
-    - name: Run fmt
-      run: cargo fmt --all -- --check
-    - name: Run clippy
-      run: cargo clippy --all --all-targets --all-features
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v2
+      - name: Setup git
+        run: git config --global user.name "Test" && git config --global user.email test@example.com
+      - name: Update
+        run: rustup update stable && rustup default stable
+      - name: Add components
+        run: rustup component add rustfmt clippy
+      - name: Run fmt
+        run: cargo fmt --all -- --check
+      - name: Run clippy
+        run: cargo clippy --all --all-targets --all-features
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose
