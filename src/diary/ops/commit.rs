@@ -111,7 +111,11 @@ mod test {
         commit(&opts, &config).unwrap();
 
         let last_commit = git::find_last_commit(&repo).unwrap();
-        assert!(last_commit.is_some())
+        commit(&opts, &config).unwrap();
+        assert!(last_commit.is_some());
+
+        let index = repo.index().unwrap();
+        assert_eq!(index.len(), 1)
     }
     #[test]
     fn commit_multiple() {
@@ -158,6 +162,9 @@ mod test {
         commit(&opts, &config).unwrap();
 
         let last_commit = git::find_last_commit(&repo).unwrap();
-        assert!(last_commit.is_some())
+        assert!(last_commit.is_some());
+
+        let index = repo.index().unwrap();
+        assert_eq!(index.len(), 2)
     }
 }
