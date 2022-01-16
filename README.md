@@ -129,6 +129,24 @@ in %Y-%m-%d format, other formats may work.
 dairy open --date 2021-11-01
 ```
 
+### Commit command
+
+The `commit` command allows you to commit an entry to a Git repo without having to
+navigate to the diary folder.
+
+```bash
+diary commit -m "An optional commit message".
+```
+
+To commit a different day's entry you can provide the --date tag along with the date
+in %Y-%m-%d format, other formats may work.
+
+```bash
+dairy commit --date 2021-11-01
+```
+
+There is also a `--push` flag to immediately push to the remote repo.
+
 ## Diary Folder Structure
 
 The `diary/` folder is organised into monthly sub-folders with each days entry

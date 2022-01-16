@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Added
+
+* Added `commit` command. This allows the user to commit entries to a git repo without having
+  to navigate to the diary folder.
+
 ## [0.5.0] - 2022-01-14
 
 ### Added
