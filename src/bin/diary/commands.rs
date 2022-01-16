@@ -2,10 +2,17 @@ use clap::{App, ArgMatches};
 use diary::config::ConfigManager;
 
 pub fn builtin() -> Vec<App<'static>> {
-    vec![init::cli(), new::cli(), add::cli(), open::cli()]
+    vec![
+        init::cli(),
+        new::cli(),
+        add::cli(),
+        open::cli(),
+        commit::cli(),
+    ]
 }
 
 pub mod add;
+pub mod commit;
 pub mod init;
 pub mod new;
 pub mod open;
@@ -16,6 +23,7 @@ pub fn builtin_exec(cmd: &str) -> Option<fn(ConfigManager, &ArgMatches) -> diary
         "new" => new::exec,
         "add" => add::exec,
         "open" => open::exec,
+        "commit" => commit::exec,
         _ => return None,
     };
     Some(f)
