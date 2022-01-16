@@ -93,14 +93,12 @@ pub fn init(opts: &InitOptions, config: &Config) -> Result<PathBuf, DiaryError> 
 mod tests {
     use std::fs::create_dir_all;
 
-    use tempfile::tempdir;
-
     use super::{init, InitOptions};
-    use crate::config::Config;
+    use crate::{config::Config, ops::testing};
 
     #[test]
     fn blank_config_valid_path() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
         let diary_dir = dir.join("diary");
         let opts = InitOptions {
             path: dir,
@@ -116,7 +114,7 @@ mod tests {
 
     #[test]
     fn blank_config_invalid_path() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
         let diary_dir = dir.join("diary");
         let opts = InitOptions {
             path: dir,
@@ -131,14 +129,13 @@ mod tests {
 
     #[test]
     fn filled_config_non_existing_path() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
         let diary_dir = dir.join("diary");
 
         let config = Config::builder().diary_path(diary_dir.clone()).build();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: false,
         };
@@ -150,13 +147,12 @@ mod tests {
 
     #[test]
     fn filled_config_existing_path() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
         let diary_dir = dir.join("diary");
         let config = Config::builder().diary_path(diary_dir.clone()).build();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: false,
         };
@@ -168,7 +164,7 @@ mod tests {
 
     #[test]
     fn blank_config_valid_path_git_repo() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
         let mut diary_dir = dir.join("diary");
         let opts = InitOptions {
             path: dir,
@@ -186,13 +182,12 @@ mod tests {
 
     #[test]
     fn filled_config_non_existing_path_git_repo() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
         let mut diary_dir = dir.join("diary");
         let config = Config::builder().diary_path(diary_dir.clone()).build();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: true,
         };
@@ -206,13 +201,12 @@ mod tests {
 
     #[test]
     fn filled_config_existing_path_git_repo() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
         let diary_dir = dir.join("diary");
         let config = Config::builder().diary_path(diary_dir.clone()).build();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: true,
         };

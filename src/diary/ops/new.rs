@@ -70,35 +70,26 @@ pub fn new(
 
 #[cfg(test)]
 mod test {
-    use std::{fs, path::PathBuf};
+    use std::fs;
 
     use chrono::prelude::*;
-    use init::InitOptions;
-    use tempfile::tempdir;
 
     use super::{new, NewOptions};
     use crate::{
-        config::Config, entry::Entry, ops::init, utils::editing::test::test_string_getter,
+        config::Config, entry::Entry, ops::testing, utils::editing::test::test_string_getter,
     };
 
     #[test]
     fn new_success() {
-        let new_opts = NewOptions { open: false };
-        let init_opts = InitOptions {
-            path: PathBuf::from(""),
-            prefix: None,
-            git_repo: false,
-        };
-        let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::builder().diary_path(diary_path).build();
-        let date = Local.ymd(2021, 11, 6);
+        let config = testing::temp_config();
+        testing::default_init(&config);
 
-        init(&init_opts, &config).unwrap();
+        let new_opts = NewOptions { open: false };
+        let date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 
         let diary_file = Entry::from_config(&config).unwrap();
-
         let test_path = diary_file.get_entry_path(&date);
 
         assert!(test_path.exists());
@@ -107,10 +98,10 @@ mod test {
     #[test]
     #[should_panic(expected = "kind: NotFound")]
     fn new_not_init() {
-        let new_opts = NewOptions { open: false };
-        let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::builder().diary_path(diary_path).build();
+        let config = testing::temp_config();
+
         let date = Local.ymd(2021, 11, 6);
+        let new_opts = NewOptions { open: false };
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
     }
@@ -118,17 +109,11 @@ mod test {
     #[test]
     #[should_panic(expected = "kind: AlreadyExists")]
     fn new_fail_second_time() {
-        let new_opts = NewOptions { open: false };
-        let init_opts = InitOptions {
-            path: PathBuf::from(""),
-            prefix: None,
-            git_repo: false,
-        };
-        let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::builder().diary_path(diary_path).build();
-        let date = Local.ymd(2021, 11, 6);
+        let config = testing::temp_config();
+        testing::default_init(&config);
 
-        init(&init_opts, &config).unwrap();
+        let new_opts = NewOptions { open: false };
+        let date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
         new(&new_opts, &config, &date, test_string_getter).unwrap();
@@ -137,8 +122,9 @@ mod test {
     #[test]
     #[should_panic(expected = "value: UnInitialised")]
     fn new_not_init_default_config() {
-        let new_opts = NewOptions { open: false };
         let config = Config::default();
+
+        let new_opts = NewOptions { open: false };
         let date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
@@ -146,17 +132,11 @@ mod test {
 
     #[test]
     fn new_open_file_success() {
-        let new_opts = NewOptions { open: true };
-        let init_opts = InitOptions {
-            path: PathBuf::from(""),
-            prefix: None,
-            git_repo: false,
-        };
-        let diary_path = tempdir().unwrap().path().to_path_buf();
-        let config = Config::builder().diary_path(diary_path).build();
-        let date = Local.ymd(2021, 11, 6);
+        let config = testing::temp_config();
+        testing::default_init(&config);
 
-        init(&init_opts, &config).unwrap();
+        let new_opts = NewOptions { open: true };
+        let date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &date, test_string_getter).unwrap();
 

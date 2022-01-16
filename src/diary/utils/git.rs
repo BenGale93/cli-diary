@@ -53,13 +53,13 @@ pub fn push_to_origin(repo: &Repository) -> Result<(), git2::Error> {
 #[cfg(test)]
 mod test {
     use git2::Repository;
-    use tempfile::tempdir;
 
     use super::find_last_commit;
+    use crate::ops::testing;
 
     #[test]
     fn no_commit() {
-        let dir = tempdir().unwrap().path().to_path_buf();
+        let dir = testing::temp_path();
 
         let repo = Repository::init(&dir).unwrap();
 

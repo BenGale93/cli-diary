@@ -32,38 +32,26 @@ pub fn commit(opts: &CommitOptions, config: &Config) -> Result<(), DiaryError> {
 mod test {
     use chrono::prelude::*;
     use git2::Repository;
-    use tempfile::tempdir;
 
     use super::{commit, CommitOptions};
     use crate::{
-        config::Config,
-        ops::{
-            init,
-            new::{new, NewOptions},
-            InitOptions,
-        },
-        utils::{editing::test::test_string_getter, git},
+        ops::{init, testing, InitOptions},
+        utils::git,
     };
 
     #[test]
     fn commit_today() {
-        let dir = tempdir().unwrap().path().to_path_buf();
-        let diary_dir = dir.join("diary");
-        let config = Config::builder().diary_path(diary_dir).build();
+        let config = testing::temp_config();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let init_opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: true,
         };
-
         init(&init_opts, &config).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
-
-        let new_opts = NewOptions { open: false };
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        testing::new_entry(&config, &entry_date);
 
         let opts = CommitOptions {
             entry_date,
@@ -84,22 +72,17 @@ mod test {
 
     #[test]
     fn commit_multiple() {
-        let dir = tempdir().unwrap().path().to_path_buf();
-        let diary_dir = dir.join("diary");
-        let config = Config::builder().diary_path(diary_dir).build();
+        let config = testing::temp_config();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let init_opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: true,
         };
-
         init(&init_opts, &config).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
-        let new_opts = NewOptions { open: false };
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        testing::new_entry(&config, &entry_date);
 
         let opts = CommitOptions {
             entry_date,
@@ -114,8 +97,7 @@ mod test {
         assert!(last_commit.is_some());
 
         let entry_date = Local.ymd(2022, 1, 14);
-        let new_opts = NewOptions { open: false };
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        testing::new_entry(&config, &entry_date);
 
         let opts = CommitOptions {
             entry_date,
@@ -136,17 +118,13 @@ mod test {
     #[test]
     #[should_panic(expected = "No such file or directory")]
     fn commit_no_entry() {
-        let dir = tempdir().unwrap().path().to_path_buf();
-        let diary_dir = dir.join("diary");
-        let config = Config::builder().diary_path(diary_dir).build();
+        let config = testing::temp_config();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let init_opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: true,
         };
-
         init(&init_opts, &config).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
@@ -163,23 +141,18 @@ mod test {
     #[test]
     #[should_panic(expected = "remote 'origin' does not exist")]
     fn commit_and_fail_to_push() {
-        let dir = tempdir().unwrap().path().to_path_buf();
-        let diary_dir = dir.join("diary");
-        let config = Config::builder().diary_path(diary_dir).build();
+        let config = testing::temp_config();
 
-        let other_dir = tempdir().unwrap().path().to_path_buf();
         let init_opts = InitOptions {
-            path: other_dir,
+            path: testing::temp_path(),
             prefix: None,
             git_repo: true,
         };
-
         init(&init_opts, &config).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
 
-        let new_opts = NewOptions { open: false };
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        testing::new_entry(&config, &entry_date);
 
         let opts = CommitOptions {
             entry_date,

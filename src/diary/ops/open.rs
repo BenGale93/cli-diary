@@ -55,13 +55,15 @@ mod test {
     };
 
     use chrono::{Local, TimeZone};
-    use tempfile::tempdir;
 
     use super::{open, OpenFileOptions};
     use crate::{
         config::Config,
         entry::Entry,
-        ops::new::{new, NewOptions},
+        ops::{
+            new::{new, NewOptions},
+            testing,
+        },
         utils::editing::test::test_string_getter,
     };
 
@@ -75,17 +77,15 @@ mod test {
 
     #[test]
     fn open_success() {
-        let entry_date = Local.ymd(2021, 11, 6);
-        let opts = OpenFileOptions { entry_date };
-        let temp_dir = tempdir().unwrap();
-        let filepath = temp_dir.path().to_path_buf();
-
-        let config = Config::builder().diary_path(filepath).build();
+        let config = testing::temp_config();
+        testing::default_init(&config);
 
         let new_opts = NewOptions { open: false };
+        let entry_date = Local.ymd(2021, 11, 6);
 
         new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
 
+        let opts = OpenFileOptions { entry_date };
         open(&opts, &config, test_user_input).unwrap();
 
         let diary_file = Entry::from_config(&config).unwrap();
@@ -100,12 +100,11 @@ mod test {
     #[test]
     #[should_panic(expected = "value: NoEntry")]
     fn open_no_entry() {
+        let config = testing::temp_config();
+        testing::default_init(&config);
+
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
-        let temp_dir = tempdir().unwrap();
-        let filepath = temp_dir.path().to_path_buf();
-
-        let config = Config::builder().diary_path(filepath).build();
 
         open(&opts, &config, test_user_input).unwrap();
     }
@@ -113,10 +112,10 @@ mod test {
     #[test]
     #[should_panic(expected = "value: UnInitialised")]
     fn open_bad_config() {
+        let config = Config::default();
+
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
-
-        let config = Config::default();
 
         open(&opts, &config, test_user_input).unwrap();
     }

@@ -84,29 +84,24 @@ mod test {
     use std::fs;
 
     use chrono::{Local, TimeZone};
-    use tempfile::tempdir;
 
     use crate::{
-        config::Config,
         entry::Entry,
         ops::{
             add::{add, AddOptions},
-            new::{new, NewOptions},
+            testing,
         },
         utils::editing::test::{test_empty_string_getter, test_string_getter},
     };
     #[test]
     fn add_no_tag() {
+        let config = testing::temp_config();
+
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: None };
-        let temp_dir = tempdir().unwrap();
-        let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::builder().diary_path(filepath).build();
-
-        let new_opts = NewOptions { open: false };
-
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        testing::default_init(&config);
+        testing::new_entry(&config, &entry_date);
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
@@ -121,16 +116,13 @@ mod test {
 
     #[test]
     fn add_with_tag() {
+        let config = testing::temp_config();
+
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: Some("Tag") };
-        let temp_dir = tempdir().unwrap();
-        let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::builder().diary_path(filepath).build();
-
-        let new_opts = NewOptions { open: false };
-
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        testing::default_init(&config);
+        testing::new_entry(&config, &entry_date);
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
 
@@ -143,19 +135,17 @@ mod test {
         assert!(content.contains("Test content"));
         assert!(content.contains("Tag"));
     }
+
     #[test]
     #[should_panic(expected = "value: NoContent")]
     fn add_empty_string() {
+        let config = testing::temp_config();
+
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: Some("Tag") };
-        let temp_dir = tempdir().unwrap();
-        let filepath = temp_dir.path().to_path_buf();
 
-        let config = Config::builder().diary_path(filepath).build();
-
-        let new_opts = NewOptions { open: false };
-
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        testing::default_init(&config);
+        testing::new_entry(&config, &entry_date);
 
         add(&opts, &config, &entry_date, test_empty_string_getter).unwrap();
     }
@@ -163,12 +153,10 @@ mod test {
     #[test]
     #[should_panic(expected = "value: NoEntry")]
     fn add_to_nonexistent_file() {
+        let config = testing::temp_config();
+
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: Some("Tag") };
-        let temp_dir = tempdir().unwrap();
-        let filepath = temp_dir.path().to_path_buf();
-
-        let config = Config::builder().diary_path(filepath).build();
 
         add(&opts, &config, &entry_date, test_string_getter).unwrap();
     }
