@@ -60,6 +60,9 @@ pub fn commit(opts: &CommitOptions, config: &Config) -> Result<(), DiaryError> {
         )?,
     };
 
+    if opts.push {
+        git::push_to_origin(&repo)?
+    };
     Ok(())
 }
 
@@ -191,6 +194,36 @@ mod test {
             entry_date,
             message: "Test message".to_string(),
             push: false,
+        };
+
+        commit(&opts, &config).unwrap();
+    }
+
+    #[test]
+    #[should_panic(expected = "remote 'origin' does not exist")]
+    fn commit_and_fail_to_push() {
+        let dir = tempdir().unwrap().path().to_path_buf();
+        let diary_dir = dir.join("diary");
+        let config = Config::builder().diary_path(diary_dir).build();
+
+        let other_dir = tempdir().unwrap().path().to_path_buf();
+        let init_opts = InitOptions {
+            path: other_dir,
+            prefix: None,
+            git_repo: true,
+        };
+
+        init(&init_opts, &config).unwrap();
+
+        let entry_date = Local.ymd(2022, 1, 13);
+
+        let new_opts = NewOptions { open: false };
+        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+
+        let opts = CommitOptions {
+            entry_date,
+            message: "Test message".to_string(),
+            push: true,
         };
 
         commit(&opts, &config).unwrap();

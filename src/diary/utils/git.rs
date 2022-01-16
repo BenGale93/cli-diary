@@ -1,4 +1,4 @@
-use git2::{Commit, ObjectType, Repository};
+use git2::{Commit, Direction, ObjectType, Repository};
 
 pub fn find_last_commit(repo: &Repository) -> Result<Option<Commit>, git2::Error> {
     let head = repo.head();
@@ -11,6 +11,12 @@ pub fn find_last_commit(repo: &Repository) -> Result<Option<Commit>, git2::Error
     Ok(Some(obj.into_commit().map_err(|_| {
         git2::Error::from_str("Couldn't find commit") // uncovered.
     })?))
+}
+
+pub fn push_to_origin(repo: &Repository) -> Result<(), git2::Error> {
+    let mut remote = repo.find_remote("origin")?;
+    remote.connect(Direction::Push)?; // uncovered.
+    remote.push(&["refs/heads/master:refs/heads/master"], None) // uncovered.
 }
 
 #[cfg(test)]
