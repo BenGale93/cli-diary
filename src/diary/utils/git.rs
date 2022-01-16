@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use git2::{Commit, Direction, ObjectType, Repository};
 
 pub fn find_last_commit(repo: &Repository) -> Result<Option<Commit>, git2::Error> {
@@ -11,6 +13,35 @@ pub fn find_last_commit(repo: &Repository) -> Result<Option<Commit>, git2::Error
     Ok(Some(obj.into_commit().map_err(|_| {
         git2::Error::from_str("Couldn't find commit") // uncovered.
     })?))
+}
+
+pub fn add_and_commit(
+    repo: &Repository,
+    file_path: &Path,
+    message: &str,
+) -> Result<(), git2::Error> {
+    let mut index = repo.index()?;
+    index.add_path(file_path)?;
+    index.write()?;
+    let oid = index.write_tree()?;
+    let signature = Repository::signature(repo)?;
+    let tree = repo.find_tree(oid)?;
+
+    let last_commit = find_last_commit(repo)?;
+
+    if let Some(reference) = last_commit {
+        repo.commit(
+            Some("HEAD"),
+            &signature,
+            &signature,
+            message,
+            &tree,
+            &[&reference],
+        )?;
+    } else {
+        repo.commit(Some("HEAD"), &signature, &signature, message, &tree, &[])?;
+    }
+    Ok(())
 }
 
 pub fn push_to_origin(repo: &Repository) -> Result<(), git2::Error> {

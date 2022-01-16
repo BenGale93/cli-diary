@@ -1,7 +1,6 @@
-use std::{ffi::OsStr, path::PathBuf};
-
 use chrono::prelude::*;
 use git2::Repository;
+use pathdiff;
 
 use crate::{config::Config, entry::Entry, errors::DiaryError, utils::git};
 pub struct CommitOptions {
@@ -14,51 +13,13 @@ pub struct CommitOptions {
 pub fn commit(opts: &CommitOptions, config: &Config) -> Result<(), DiaryError> {
     config.initialised()?;
 
-    let repo = Repository::open(config.diary_path())?;
-
     let diary_entry = Entry::from_config(config)?;
     let entry_path = diary_entry.get_entry_path(&opts.entry_date);
+    let relative_path = pathdiff::diff_paths(&entry_path, config.diary_path()).unwrap();
 
-    let mut relative_path = PathBuf::new();
+    let repo = Repository::open(config.diary_path())?;
 
-    let mut visited = false;
-    for comp in entry_path.iter() {
-        if visited {
-            relative_path.push(comp);
-        };
-        if Some(comp) == Some(OsStr::new("diary")) {
-            visited = true;
-        }
-    }
-
-    let mut index = repo.index()?;
-    index.add_path(&relative_path)?;
-    index.write()?;
-    let oid = index.write_tree()?;
-    let signature = Repository::signature(&repo)?;
-    let tree = repo.find_tree(oid)?;
-
-    let last_commit = git::find_last_commit(&repo)?;
-
-    match last_commit {
-        Some(reference) => repo.commit(
-            Some("HEAD"),
-            &signature,
-            &signature,
-            &opts.message,
-            &tree,
-            &[&reference],
-        )?,
-
-        None => repo.commit(
-            Some("HEAD"),
-            &signature,
-            &signature,
-            &opts.message,
-            &tree,
-            &[],
-        )?,
-    };
+    git::add_and_commit(&repo, &relative_path, &opts.message)?;
 
     if opts.push {
         git::push_to_origin(&repo)?
