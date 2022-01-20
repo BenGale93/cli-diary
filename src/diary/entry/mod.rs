@@ -2,6 +2,7 @@ use std::{
     fs::{File, OpenOptions},
     io,
     path::{Path, PathBuf},
+    str::FromStr,
 };
 
 use chrono::prelude::*;
@@ -86,21 +87,23 @@ pub enum EntryFileType {
     RstDiary,
 }
 
-fn entry_file_type_from_string(file_type: impl AsRef<str>) -> Result<EntryFileType, DiaryError> {
-    match file_type.as_ref() {
-        "md" => Ok(MarkdownDiary {}.into()),
-        "rst" => Ok(RstDiary {}.into()),
-        _ => Err(DiaryError::BadFileType),
+impl FromStr for EntryFileType {
+    type Err = DiaryError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "md" => Ok(MarkdownDiary {}.into()),
+            "rst" => Ok(RstDiary {}.into()),
+            _ => Err(DiaryError::BadFileType),
+        }
     }
 }
 
-pub fn process_file_type(
-    potential_file_type: Option<impl AsRef<str>>,
-) -> Result<Option<impl AsRef<str>>, DiaryError> {
+pub fn process_file_type(potential_file_type: Option<&str>) -> Result<Option<&str>, DiaryError> {
     match potential_file_type {
         None => Ok(None),
         Some(file_type) => {
-            let result = entry_file_type_from_string(&file_type);
+            let result = EntryFileType::from_str(file_type);
             if result.is_err() {
                 Err(DiaryError::BadFileType)
             } else {
@@ -118,7 +121,7 @@ pub struct Entry {
 
 impl Entry {
     pub fn new(prefix: &str, diary_path: &Path, file_type: &str) -> Result<Box<Self>, DiaryError> {
-        let entry_file_type = entry_file_type_from_string(file_type)?;
+        let entry_file_type = EntryFileType::from_str(file_type)?;
         Ok(Box::new(Self {
             prefix: prefix.to_string(),
             diary_path: diary_path.to_path_buf(),
@@ -163,24 +166,21 @@ impl Entry {
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
+    use std::{path::PathBuf, str::FromStr};
 
     use chrono::prelude::*;
 
-    use super::{
-        entry_file_type_from_string, process_file_type, Entry, EntryContent, MarkdownDiary,
-        RstDiary,
-    };
+    use super::{process_file_type, Entry, EntryContent, EntryFileType, MarkdownDiary, RstDiary};
     use crate::config::Config;
 
     #[test]
 
     fn get_extension() {
-        let entry_file = entry_file_type_from_string("rst").unwrap();
+        let entry_file = EntryFileType::from_str("rst").unwrap();
 
         assert_eq!(entry_file.extension(), "rst");
 
-        let entry_file = entry_file_type_from_string("md").unwrap();
+        let entry_file = EntryFileType::from_str("md").unwrap();
 
         assert_eq!(entry_file.extension(), "md")
     }
