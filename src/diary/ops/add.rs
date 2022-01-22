@@ -62,7 +62,7 @@ pub fn add(
 ) -> Result<(), DiaryError> {
     config.initialised()?;
     let diary_entry = Entry::from_config(config)?;
-    let file = match diary_entry.get_entry(date) {
+    let file = match diary_entry.get_entry_file(date) {
         Ok(file) => file,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
             return Err(DiaryError::NoEntry { source: Some(e) })

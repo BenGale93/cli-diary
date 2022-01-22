@@ -158,7 +158,7 @@ impl Entry {
         entry_path.push(entry_name);
         entry_path
     }
-    pub fn get_entry(&self, date: &Date<Local>) -> io::Result<File> {
+    pub fn get_entry_file(&self, date: &Date<Local>) -> io::Result<File> {
         let entry_path = self.get_entry_path(date);
         return OpenOptions::new().append(true).open(entry_path);
     }
