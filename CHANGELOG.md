@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+## [0.6.0] - 2022-01-22
+
 ### Added
 
 * Added `commit` command. This allows the user to commit entries to a git repo without having
