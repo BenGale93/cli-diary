@@ -12,8 +12,8 @@ impl ConfigBuilder {
     fn new() -> Self {
         Self {
             diary_path: PathBuf::from(""),
-            prefix: String::from("diary"),
-            file_type: String::from("md"),
+            prefix: "diary".to_string(),
+            file_type: "md".to_string(),
         }
     }
 

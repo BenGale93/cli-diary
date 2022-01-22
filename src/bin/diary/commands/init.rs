@@ -45,7 +45,7 @@ fn args_to_init_ops(args: &ArgMatches) -> Result<init::InitOptions, Error> {
         None => {
             return Err(Error::raw(
                 ErrorKind::MissingRequiredArgument,
-                String::from("Value for path argument not found."),
+                "Value for path argument not found.".to_string(),
             )); // uncovered.
         }
     };
