@@ -5,7 +5,7 @@ use clap::{App, Arg, ArgMatches};
 use diary::{
     config::ConfigManager,
     ops::commit::{commit, CommitOptions},
-    CliResult,
+    CliResult, Diary,
 };
 
 pub fn cli() -> App<'static> {
@@ -54,7 +54,8 @@ fn args_to_commit_opts(args: &ArgMatches) -> Result<CommitOptions, ParseError> {
 
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let opts = args_to_commit_opts(args)?;
-    commit(&opts, config_manager.config())?;
+    let diary = Diary::from_config(config_manager.config())?;
+    commit(&opts, &diary)?;
     println!("Committed entry."); // uncovered
     Ok(()) // uncovered
 }

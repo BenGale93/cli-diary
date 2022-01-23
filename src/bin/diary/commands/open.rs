@@ -5,7 +5,7 @@ use clap::{App, Arg, ArgMatches};
 use diary::{
     config::ConfigManager,
     ops::open::{open, OpenFileOptions},
-    CliResult,
+    CliResult, Diary,
 };
 
 pub fn cli() -> App<'static> {
@@ -33,7 +33,8 @@ fn args_to_open_opts(args: &ArgMatches) -> Result<OpenFileOptions, ParseError> {
 
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let opts = args_to_open_opts(args)?;
-    open(&opts, config_manager.config(), edit::edit_file)?;
+    let diary = Diary::from_config(config_manager.config())?;
+    open(&opts, &diary, edit::edit_file)?;
     println!("Opened diary entry."); // uncovered
     Ok(()) // uncovered
 }

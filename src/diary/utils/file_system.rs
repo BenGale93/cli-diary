@@ -7,9 +7,9 @@ use chrono::{Date, Local};
 
 use crate::errors::DiaryError;
 
-pub fn month_folder(path_root: PathBuf, date: &Date<Local>) -> PathBuf {
+pub fn month_folder(path_root: &Path, date: &Date<Local>) -> PathBuf {
     let month_folder = PathBuf::from(date.format("%Y-%m").to_string());
-    [path_root, month_folder].iter().collect()
+    [path_root, &month_folder].iter().collect()
 }
 
 pub fn create_month_folder(path: &Path) -> Result<(), DiaryError> {

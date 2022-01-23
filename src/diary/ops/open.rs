@@ -7,7 +7,7 @@ use std::{io, path::PathBuf};
 
 use chrono::prelude::*;
 
-use crate::{config::Config, entry::Entry, errors::DiaryError};
+use crate::{errors::DiaryError, Diary};
 
 /// The options available to the open command.
 pub struct OpenFileOptions {
@@ -20,19 +20,15 @@ pub struct OpenFileOptions {
 /// # Arguments
 ///
 /// * `opts` - The options passed by the user at runtime.
-/// * `config` - The contents of the config file.
+/// * `diary` - Struct representing the diary.
 /// * `user_input` - A function of type UserInput. A function that takes a file
 /// and adds content to it.
 pub fn open(
     opts: &OpenFileOptions,
-    config: &Config,
+    diary: &Diary,
     user_input: UserInput,
 ) -> Result<(), DiaryError> {
-    config.initialised()?;
-
-    let diary_entry = Entry::from_config(config)?;
-
-    let entry_path = diary_entry.get_entry_path(&opts.entry_date);
+    let entry_path = diary.get_entry_path(&opts.entry_date);
 
     if !entry_path.exists() {
         return Err(DiaryError::NoEntry { source: None });
@@ -59,12 +55,12 @@ mod test {
     use super::{open, OpenFileOptions};
     use crate::{
         config::Config,
-        entry::Entry,
         ops::{
             new::{new, NewOptions},
             testing,
         },
         utils::editing::test::test_string_getter,
+        Diary,
     };
 
     fn test_user_input(filepath: PathBuf) -> io::Result<()> {
@@ -78,19 +74,18 @@ mod test {
     #[test]
     fn open_success() {
         let config = testing::temp_config();
-        testing::default_init(&config);
+        testing::default_init(config.diary_path());
+        let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
         let entry_date = Local.ymd(2021, 11, 6);
 
-        new(&new_opts, &config, &entry_date, test_string_getter).unwrap();
+        new(&new_opts, &diary, &entry_date, test_string_getter).unwrap();
 
         let opts = OpenFileOptions { entry_date };
-        open(&opts, &config, test_user_input).unwrap();
+        open(&opts, &diary, test_user_input).unwrap();
 
-        let diary_file = Entry::from_config(&config).unwrap();
-
-        let entry_path = diary_file.get_entry_path(&entry_date);
+        let entry_path = diary.get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 
@@ -101,22 +96,24 @@ mod test {
     #[should_panic(expected = "value: NoEntry")]
     fn open_no_entry() {
         let config = testing::temp_config();
-        testing::default_init(&config);
+        testing::default_init(config.diary_path());
+        let diary = Diary::from_config(&config).unwrap();
 
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
 
-        open(&opts, &config, test_user_input).unwrap();
+        open(&opts, &diary, test_user_input).unwrap();
     }
 
     #[test]
     #[should_panic(expected = "value: UnInitialised")]
     fn open_bad_config() {
         let config = Config::default();
+        let diary = Diary::from_config(&config).unwrap();
 
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = OpenFileOptions { entry_date };
 
-        open(&opts, &config, test_user_input).unwrap();
+        open(&opts, &diary, test_user_input).unwrap();
     }
 }

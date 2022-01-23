@@ -2,7 +2,7 @@ use chrono::prelude::*;
 use git2::Repository;
 use pathdiff;
 
-use crate::{config::Config, entry::Entry, errors::DiaryError, utils::git};
+use crate::{errors::DiaryError, utils::git, Diary};
 pub struct CommitOptions {
     /// The date of the entry to open.
     pub entry_date: Date<Local>,
@@ -10,14 +10,11 @@ pub struct CommitOptions {
     pub push: bool,
 }
 
-pub fn commit(opts: &CommitOptions, config: &Config) -> Result<(), DiaryError> {
-    config.initialised()?;
+pub fn commit(opts: &CommitOptions, diary: &Diary) -> Result<(), DiaryError> {
+    let entry_path = diary.get_entry_path(&opts.entry_date);
+    let relative_path = pathdiff::diff_paths(&entry_path, diary.diary_path()).unwrap();
 
-    let diary_entry = Entry::from_config(config)?;
-    let entry_path = diary_entry.get_entry_path(&opts.entry_date);
-    let relative_path = pathdiff::diff_paths(&entry_path, config.diary_path()).unwrap();
-
-    let repo = Repository::open(config.diary_path())?;
+    let repo = Repository::open(diary.diary_path())?;
 
     git::add_and_commit(&repo, &relative_path, &opts.message)?;
 
@@ -37,6 +34,7 @@ mod test {
     use crate::{
         ops::{init, testing, InitOptions},
         utils::git,
+        Diary,
     };
 
     #[test]
@@ -48,7 +46,7 @@ mod test {
             prefix: None,
             git_repo: true,
         };
-        init(&init_opts, &config).unwrap();
+        init(&init_opts, config.diary_path()).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
         testing::new_entry(&config, &entry_date);
@@ -60,10 +58,11 @@ mod test {
         };
         let repo = Repository::open(config.diary_path()).unwrap();
 
-        commit(&opts, &config).unwrap();
+        let diary = Diary::from_config(&config).unwrap();
+        commit(&opts, &diary).unwrap();
 
         let last_commit = git::find_last_commit(&repo).unwrap();
-        commit(&opts, &config).unwrap();
+        commit(&opts, &diary).unwrap();
         assert!(last_commit.is_some());
 
         let index = repo.index().unwrap();
@@ -79,7 +78,7 @@ mod test {
             prefix: None,
             git_repo: true,
         };
-        init(&init_opts, &config).unwrap();
+        init(&init_opts, config.diary_path()).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
         testing::new_entry(&config, &entry_date);
@@ -91,7 +90,8 @@ mod test {
         };
         let repo = Repository::open(config.diary_path()).unwrap();
 
-        commit(&opts, &config).unwrap();
+        let diary = Diary::from_config(&config).unwrap();
+        commit(&opts, &diary).unwrap();
 
         let last_commit = git::find_last_commit(&repo).unwrap();
         assert!(last_commit.is_some());
@@ -106,7 +106,7 @@ mod test {
         };
         let repo = Repository::open(config.diary_path()).unwrap();
 
-        commit(&opts, &config).unwrap();
+        commit(&opts, &diary).unwrap();
 
         let last_commit = git::find_last_commit(&repo).unwrap();
         assert!(last_commit.is_some());
@@ -125,7 +125,7 @@ mod test {
             prefix: None,
             git_repo: true,
         };
-        init(&init_opts, &config).unwrap();
+        init(&init_opts, config.diary_path()).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
 
@@ -135,7 +135,8 @@ mod test {
             push: false,
         };
 
-        commit(&opts, &config).unwrap();
+        let diary = Diary::from_config(&config).unwrap();
+        commit(&opts, &diary).unwrap();
     }
 
     #[test]
@@ -148,7 +149,7 @@ mod test {
             prefix: None,
             git_repo: true,
         };
-        init(&init_opts, &config).unwrap();
+        init(&init_opts, config.diary_path()).unwrap();
 
         let entry_date = Local.ymd(2022, 1, 13);
 
@@ -160,6 +161,7 @@ mod test {
             push: true,
         };
 
-        commit(&opts, &config).unwrap();
+        let diary = Diary::from_config(&config).unwrap();
+        commit(&opts, &diary).unwrap();
     }
 }

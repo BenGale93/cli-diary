@@ -1,7 +1,5 @@
 use std::path::PathBuf;
 
-use crate::errors::DiaryError;
-
 pub struct ConfigBuilder {
     diary_path: PathBuf,
     prefix: String,
@@ -70,14 +68,6 @@ impl Config {
 
     pub fn file_type(&self) -> &String {
         &self.file_type
-    }
-
-    pub fn initialised(&self) -> Result<(), DiaryError> {
-        if self.diary_path == PathBuf::from("") {
-            Err(DiaryError::UnInitialised { source: None })
-        } else {
-            Ok(())
-        }
     }
 }
 

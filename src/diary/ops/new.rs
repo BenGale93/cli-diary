@@ -7,10 +7,9 @@ use std::fs::OpenOptions;
 use chrono::prelude::*;
 
 use crate::{
-    config::Config,
-    entry::{Entry, EntryContent},
     errors::DiaryError,
     utils::{editing, file_system},
+    Diary, EntryContent,
 };
 
 /// The options available to the new command.
@@ -24,7 +23,7 @@ pub struct NewOptions {
 /// # Arguments
 ///
 /// * `opts` - The options passed by the user at runtime.
-/// * `config` - The contents of the config file.
+/// * `diary` - Struct representing the diary.
 /// * `date` - The date for which to create the new entry.
 /// * `string_getter` - The function that obtains the string to add to the file.
 ///
@@ -35,18 +34,14 @@ pub struct NewOptions {
 /// DiaryError on any other IO issues.
 pub fn new(
     opts: &NewOptions,
-    config: &Config,
+    diary: &Diary,
     date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
-    config.initialised()?;
-
-    let diary_entry = Entry::from_config(config)?;
-
-    let mut new_entry_path = file_system::month_folder(config.diary_path().to_path_buf(), date);
+    let mut new_entry_path = file_system::month_folder(diary.diary_path(), date);
     file_system::create_month_folder(&new_entry_path)?;
 
-    let entry_name = diary_entry.file_name(date);
+    let entry_name = diary.file_name(date);
 
     new_entry_path.push(entry_name);
     let result = OpenOptions::new()
@@ -56,7 +51,7 @@ pub fn new(
 
     let mut file = match result {
         Ok(mut file) => {
-            editing::add_user_content_to_file(&mut file, diary_entry.file_type().title(date))?;
+            editing::add_user_content_to_file(&mut file, diary.file_type().title(date))?;
             file
         }
         Err(e) => return Err(e.into()),
@@ -75,72 +70,75 @@ mod test {
     use chrono::prelude::*;
 
     use super::{new, NewOptions};
-    use crate::{
-        config::Config, entry::Entry, ops::testing, utils::editing::test::test_string_getter,
-    };
+    use crate::{config::Config, ops::testing, utils::editing::test::test_string_getter, Diary};
 
     #[test]
     fn new_success() {
         let config = testing::temp_config();
-        testing::default_init(&config);
+        testing::default_init(config.diary_path());
+
+        let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
         let date = Local.ymd(2021, 11, 6);
 
-        new(&new_opts, &config, &date, test_string_getter).unwrap();
+        new(&new_opts, &diary, &date, test_string_getter).unwrap();
 
-        let diary_file = Entry::from_config(&config).unwrap();
-        let test_path = diary_file.get_entry_path(&date);
+        let test_path = diary.get_entry_path(&date);
 
         assert!(test_path.exists());
     }
 
     #[test]
-    #[should_panic(expected = "kind: NotFound")]
+    #[should_panic(expected = "value: UnInitialised")]
     fn new_not_init() {
         let config = testing::temp_config();
+        let diary = Diary::from_config(&config).unwrap();
 
         let date = Local.ymd(2021, 11, 6);
         let new_opts = NewOptions { open: false };
 
-        new(&new_opts, &config, &date, test_string_getter).unwrap();
+        new(&new_opts, &diary, &date, test_string_getter).unwrap();
     }
 
     #[test]
     #[should_panic(expected = "kind: AlreadyExists")]
     fn new_fail_second_time() {
         let config = testing::temp_config();
-        testing::default_init(&config);
+        testing::default_init(config.diary_path());
+        let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
         let date = Local.ymd(2021, 11, 6);
 
-        new(&new_opts, &config, &date, test_string_getter).unwrap();
-        new(&new_opts, &config, &date, test_string_getter).unwrap();
+        new(&new_opts, &diary, &date, test_string_getter).unwrap();
+        new(&new_opts, &diary, &date, test_string_getter).unwrap();
     }
 
     #[test]
     #[should_panic(expected = "value: UnInitialised")]
     fn new_not_init_default_config() {
         let config = Config::default();
+        let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
         let date = Local.ymd(2021, 11, 6);
 
-        new(&new_opts, &config, &date, test_string_getter).unwrap();
+        new(&new_opts, &diary, &date, test_string_getter).unwrap();
     }
 
     #[test]
     fn new_open_file_success() {
         let config = testing::temp_config();
-        testing::default_init(&config);
+        testing::default_init(config.diary_path());
+        let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: true };
         let date = Local.ymd(2021, 11, 6);
 
-        new(&new_opts, &config, &date, test_string_getter).unwrap();
+        new(&new_opts, &diary, &date, test_string_getter).unwrap();
 
-        let diary_file = Entry::from_config(&config).unwrap();
+        let diary_file = Diary::from_config(&config).unwrap();
 
         let test_path = diary_file.get_entry_path(&date);
 

@@ -4,9 +4,8 @@ use std::{fs::canonicalize, path::PathBuf};
 use clap::{App, Arg, ArgMatches, Error, ErrorKind};
 use diary::{
     config::{Config, ConfigManager},
-    entry::process_file_type,
     ops::{init, InitOptions},
-    CliResult,
+    process_file_type, CliResult,
 };
 
 pub fn cli() -> App<'static> {
@@ -85,7 +84,7 @@ pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let processed_file_type = process_file_type(args.value_of("filetype"))?;
 
     let opts = args_to_init_ops(args)?;
-    let path = init::init(&opts, config_manager.config())?;
+    let path = init::init(&opts, config_manager.config().diary_path())?;
 
     let new_cfg = build_new_config(path, opts.prefix, processed_file_type);
 

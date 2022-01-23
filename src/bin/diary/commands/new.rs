@@ -4,7 +4,7 @@ use clap::{App, Arg, ArgMatches};
 use diary::{
     config::ConfigManager,
     ops::new::{new, NewOptions},
-    CliResult,
+    CliResult, Diary,
 };
 
 pub fn cli() -> App<'static> {
@@ -26,7 +26,8 @@ fn args_to_new_opts(args: &ArgMatches) -> NewOptions {
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let opts = args_to_new_opts(args);
     let date = Local::today();
-    new(&opts, config_manager.config(), &date, edit::edit)?;
+    let diary = Diary::from_config(config_manager.config())?;
+    new(&opts, &diary, &date, edit::edit)?;
     println!("Created today's entry.");
     Ok(())
 }

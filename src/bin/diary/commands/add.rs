@@ -3,7 +3,7 @@ use clap::{App, Arg, ArgMatches};
 use diary::{
     config::ConfigManager,
     ops::add::{add, AddOptions},
-    CliResult,
+    CliResult, Diary,
 };
 
 pub fn cli() -> App<'static> {
@@ -26,7 +26,8 @@ fn args_to_add_opts(args: &ArgMatches) -> AddOptions {
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let opts = args_to_add_opts(args);
     let date = Local::today();
-    add(&opts, config_manager.config(), &date, edit::edit)?;
+    let diary = Diary::from_config(config_manager.config())?;
+    add(&opts, &diary, &date, edit::edit)?;
     println!("Added content."); //uncovered.
     Ok(()) //uncovered.
 }

@@ -6,12 +6,7 @@ use std::{fs::File, io::Write};
 
 use chrono::prelude::*;
 
-use crate::{
-    config::Config,
-    entry::{Entry, EntryContent},
-    errors::DiaryError,
-    utils::editing,
-};
+use crate::{errors::DiaryError, utils::editing, Diary, EntryContent};
 
 /// The options available to the add command.
 pub struct AddOptions<'a> {
@@ -47,7 +42,7 @@ fn add_content(mut file: File, content: String, tag: Option<String>) -> Result<(
 /// # Arguments
 ///
 /// * `opts` - The options available to the add function.
-/// * `config` - The diary config file.
+/// * `diary` - Struct representing the diary.
 /// * `date` - The date of the entry to add to.
 /// * `string_getter` - The function that obtains the string to add to the file.
 ///
@@ -56,13 +51,11 @@ fn add_content(mut file: File, content: String, tag: Option<String>) -> Result<(
 /// The unit if adding the content was successful, a DiaryError otherwise.
 pub fn add(
     opts: &AddOptions,
-    config: &Config,
+    diary: &Diary,
     date: &Date<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
-    config.initialised()?;
-    let diary_entry = Entry::from_config(config)?;
-    let file = match diary_entry.get_entry_file(date) {
+    let file = match diary.get_entry_file(date) {
         Ok(file) => file,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
             return Err(DiaryError::NoEntry { source: Some(e) })
@@ -72,9 +65,7 @@ pub fn add(
 
     let content = string_getter("".to_string())?;
 
-    let tag_result = opts
-        .tag
-        .map(|tag| diary_entry.file_type().tag(tag.to_string()));
+    let tag_result = opts.tag.map(|tag| diary.file_type().tag(tag.to_string()));
 
     add_content(file, content, tag_result)
 }
@@ -86,26 +77,28 @@ mod test {
     use chrono::{Local, TimeZone};
 
     use crate::{
-        entry::Entry,
         ops::{
             add::{add, AddOptions},
             testing,
         },
         utils::editing::test::{test_empty_string_getter, test_string_getter},
+        Diary,
     };
     #[test]
     fn add_no_tag() {
         let config = testing::temp_config();
 
-        let entry_date = Local.ymd(2021, 11, 6);
-        let opts = AddOptions { tag: None };
+        testing::default_init(config.diary_path());
 
-        testing::default_init(&config);
+        let entry_date = Local.ymd(2021, 11, 6);
         testing::new_entry(&config, &entry_date);
 
-        add(&opts, &config, &entry_date, test_string_getter).unwrap();
+        let diary = Diary::from_config(&config).unwrap();
 
-        let diary_file = Entry::from_config(&config).unwrap();
+        let opts = AddOptions { tag: None };
+        add(&opts, &diary, &entry_date, test_string_getter).unwrap();
+
+        let diary_file = Diary::from_config(&config).unwrap();
 
         let entry_path = diary_file.get_entry_path(&entry_date);
 
@@ -117,18 +110,16 @@ mod test {
     #[test]
     fn add_with_tag() {
         let config = testing::temp_config();
+        testing::default_init(config.diary_path());
 
         let entry_date = Local.ymd(2021, 11, 6);
-        let opts = AddOptions { tag: Some("Tag") };
-
-        testing::default_init(&config);
         testing::new_entry(&config, &entry_date);
 
-        add(&opts, &config, &entry_date, test_string_getter).unwrap();
+        let diary = Diary::from_config(&config).unwrap();
+        let opts = AddOptions { tag: Some("Tag") };
+        add(&opts, &diary, &entry_date, test_string_getter).unwrap();
 
-        let diary_file = Entry::from_config(&config).unwrap();
-
-        let entry_path = diary_file.get_entry_path(&entry_date);
+        let entry_path = diary.get_entry_path(&entry_date);
 
         let content = fs::read_to_string(entry_path).unwrap();
 
@@ -140,24 +131,26 @@ mod test {
     #[should_panic(expected = "value: NoContent")]
     fn add_empty_string() {
         let config = testing::temp_config();
+        testing::default_init(config.diary_path());
 
         let entry_date = Local.ymd(2021, 11, 6);
-        let opts = AddOptions { tag: Some("Tag") };
-
-        testing::default_init(&config);
         testing::new_entry(&config, &entry_date);
 
-        add(&opts, &config, &entry_date, test_empty_string_getter).unwrap();
+        let diary = Diary::from_config(&config).unwrap();
+        let opts = AddOptions { tag: Some("Tag") };
+        add(&opts, &diary, &entry_date, test_empty_string_getter).unwrap();
     }
 
     #[test]
     #[should_panic(expected = "value: NoEntry")]
     fn add_to_nonexistent_file() {
         let config = testing::temp_config();
+        testing::default_init(config.diary_path());
+
+        let diary = Diary::from_config(&config).unwrap();
 
         let entry_date = Local.ymd(2021, 11, 6);
         let opts = AddOptions { tag: Some("Tag") };
-
-        add(&opts, &config, &entry_date, test_string_getter).unwrap();
+        add(&opts, &diary, &entry_date, test_string_getter).unwrap();
     }
 }

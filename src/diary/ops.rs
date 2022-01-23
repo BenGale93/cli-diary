@@ -7,7 +7,7 @@ pub mod open;
 
 #[cfg(test)]
 pub mod testing {
-    use std::path::PathBuf;
+    use std::path::{Path, PathBuf};
 
     use chrono::prelude::*;
     use tempfile::tempdir;
@@ -17,6 +17,7 @@ pub mod testing {
         config::Config,
         ops::new::{new, NewOptions},
         utils::editing::test::test_string_getter,
+        Diary,
     };
 
     pub fn temp_path() -> PathBuf {
@@ -35,15 +36,16 @@ pub mod testing {
 
     pub fn new_entry(config: &Config, entry_date: &Date<Local>) {
         let new_opts = NewOptions { open: false };
-        new(&new_opts, config, entry_date, test_string_getter).unwrap();
+        let diary = Diary::from_config(config).unwrap();
+        new(&new_opts, &diary, entry_date, test_string_getter).unwrap();
     }
 
-    pub fn default_init(config: &Config) {
+    pub fn default_init(potential_path: &Path) {
         let init_opts = InitOptions {
             path: temp_path(),
             prefix: None,
             git_repo: false,
         };
-        init(&init_opts, config).unwrap();
+        init(&init_opts, potential_path).unwrap();
     }
 }

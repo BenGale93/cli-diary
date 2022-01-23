@@ -3,11 +3,14 @@
 //! The init module contains functionality relating to the init command,
 //! independent of the CLI.
 
-use std::{fs::create_dir_all, path::PathBuf};
+use std::{
+    fs::create_dir_all,
+    path::{Path, PathBuf},
+};
 
 use git2::Repository;
 
-use crate::{config::Config, errors::DiaryError};
+use crate::errors::DiaryError;
 
 /// The options available to the init command.
 pub struct InitOptions {
@@ -29,18 +32,18 @@ enum InitStatus {
 /// # Arguments
 ///
 /// * `opts` - The options passed by the user at runtime.
-/// * `config` - The contents of the config file.
+/// * `potential_path` - The potential location of the diary folder, as defined in the config.
 ///
 /// # Returns
 ///
 /// Either the initialisation status, which provides the path to use, or a DiaryError
 /// if the diary is already initialised somewhere.
-fn establish_path(opts: &InitOptions, config: &Config) -> Result<InitStatus, DiaryError> {
-    if config.diary_path() != &PathBuf::from("") {
-        if config.diary_path().exists() {
+fn establish_path(opts: &InitOptions, potential_path: &Path) -> Result<InitStatus, DiaryError> {
+    if potential_path != PathBuf::from("") {
+        if potential_path.exists() {
             Err(DiaryError::ExistsElsewhere)
         } else {
-            Ok(InitStatus::UseConfig(config.diary_path().to_path_buf()))
+            Ok(InitStatus::UseConfig(potential_path.to_path_buf()))
         }
     } else {
         let diary_path = opts.path.join("diary");
@@ -62,8 +65,8 @@ fn establish_path(opts: &InitOptions, config: &Config) -> Result<InitStatus, Dia
 ///
 /// Either the Path of the new diary folder or a DiaryError if there was an
 /// issue with initialisation.
-pub fn init(opts: &InitOptions, config: &Config) -> Result<PathBuf, DiaryError> {
-    let init_status = establish_path(opts, config);
+pub fn init(opts: &InitOptions, potential_path: &Path) -> Result<PathBuf, DiaryError> {
+    let init_status = establish_path(opts, potential_path);
     let path = match init_status? {
         InitStatus::UseConfig(path) => {
             print!("It appears the config file already has a diary path set. ");
@@ -107,7 +110,7 @@ mod tests {
         };
         let config = Config::default();
 
-        init(&opts, &config).unwrap();
+        init(&opts, config.diary_path()).unwrap();
 
         assert!(diary_dir.exists());
     }
@@ -124,7 +127,7 @@ mod tests {
         let config = Config::default();
         create_dir_all(diary_dir).unwrap();
 
-        init(&opts, &config).expect_err("No error produced.");
+        init(&opts, config.diary_path()).expect_err("No error produced.");
     }
 
     #[test]
@@ -140,7 +143,7 @@ mod tests {
             git_repo: false,
         };
 
-        init(&opts, &config).unwrap();
+        init(&opts, config.diary_path()).unwrap();
 
         assert!(diary_dir.exists());
     }
@@ -159,7 +162,7 @@ mod tests {
 
         create_dir_all(diary_dir).unwrap();
 
-        init(&opts, &config).expect_err("No error produced.");
+        init(&opts, config.diary_path()).expect_err("No error produced.");
     }
 
     #[test]
@@ -173,7 +176,7 @@ mod tests {
         };
         let config = Config::default();
 
-        init(&opts, &config).unwrap();
+        init(&opts, config.diary_path()).unwrap();
 
         diary_dir.push(".git");
 
@@ -192,7 +195,7 @@ mod tests {
             git_repo: true,
         };
 
-        init(&opts, &config).unwrap();
+        init(&opts, config.diary_path()).unwrap();
 
         diary_dir.push(".git");
 
@@ -213,6 +216,6 @@ mod tests {
 
         create_dir_all(diary_dir).unwrap();
 
-        init(&opts, &config).expect_err("No error produced.");
+        init(&opts, config.diary_path()).expect_err("No error produced.");
     }
 }
