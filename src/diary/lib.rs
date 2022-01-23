@@ -116,14 +116,10 @@ impl FromStr for EntryFileType {
 pub fn process_file_type(potential_file_type: Option<&str>) -> Result<Option<&str>, DiaryError> {
     match potential_file_type {
         None => Ok(None),
-        Some(file_type) => {
-            let result = EntryFileType::from_str(file_type);
-            if result.is_err() {
-                Err(DiaryError::BadFileType)
-            } else {
-                Ok(Some(file_type))
-            }
-        }
+        Some(file_type) => match EntryFileType::from_str(file_type) {
+            Err(_) => Err(DiaryError::BadFileType),
+            Ok(_) => Ok(Some(file_type)),
+        },
     }
 }
 

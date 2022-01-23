@@ -71,7 +71,7 @@ impl Config {
     }
 }
 
-impl ::std::default::Default for Config {
+impl Default for Config {
     /// Creates a default Config, used when the user doesn't have a config initialised.
     fn default() -> Self {
         ConfigBuilder::new().build()
