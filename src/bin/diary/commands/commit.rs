@@ -47,7 +47,7 @@ fn args_to_commit_opts(args: &ArgMatches) -> Result<CommitOptions, ParseError> {
     let push = args.is_present("push");
     Ok(CommitOptions {
         entry_date,
-        message: message.to_string(),
+        message: message.to_owned(),
         push,
     })
 }

@@ -13,7 +13,9 @@ pub fn month_folder(path_root: &Path, date: &Date<Local>) -> PathBuf {
 }
 
 pub fn create_month_folder(path: &Path) -> Result<(), DiaryError> {
-    if !path.exists() {
+    if path.exists() {
+        Ok(())
+    } else {
         match create_dir(&path) {
             Ok(_) => Ok(()),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
@@ -21,7 +23,5 @@ pub fn create_month_folder(path: &Path) -> Result<(), DiaryError> {
             }
             Err(e) => panic!("Unexpected IO error {}", e), // uncovered.
         }
-    } else {
-        Ok(())
     }
 }

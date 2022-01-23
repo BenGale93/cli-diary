@@ -10,8 +10,8 @@ impl ConfigBuilder {
     fn new() -> Self {
         Self {
             diary_path: PathBuf::from(""),
-            prefix: "diary".to_string(),
-            file_type: "md".to_string(),
+            prefix: "diary".to_owned(),
+            file_type: "md".to_owned(),
         }
     }
 
@@ -93,14 +93,14 @@ impl ConfigManager {
         &self.config
     }
 
-    pub fn with_location(location: Option<PathBuf>) -> ConfigManager {
-        ConfigManager {
+    pub fn with_location(location: Option<PathBuf>) -> Self {
+        Self {
             location,
             ..Default::default()
         }
     }
 
-    pub fn read(mut self) -> Result<ConfigManager, confy::ConfyError> {
+    pub fn read(mut self) -> Result<Self, confy::ConfyError> {
         let config: Config = match &self.location {
             Some(l) => confy::load_path(l)?,
             _ => confy::load("diary")?,
@@ -118,7 +118,7 @@ impl ConfigManager {
     }
 
     #[must_use]
-    pub fn update_config(mut self, config: Config) -> ConfigManager {
+    pub fn update_config(mut self, config: Config) -> Self {
         self.config = config;
         self
     }

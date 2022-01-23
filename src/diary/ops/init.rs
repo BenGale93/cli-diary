@@ -39,18 +39,16 @@ enum InitStatus {
 /// Either the initialisation status, which provides the path to use, or a DiaryError
 /// if the diary is already initialised somewhere.
 fn establish_path(opts: &InitOptions, potential_path: &Path) -> Result<InitStatus, DiaryError> {
-    if potential_path != PathBuf::from("") {
-        if potential_path.exists() {
-            Err(DiaryError::ExistsElsewhere)
-        } else {
-            Ok(InitStatus::UseConfig(potential_path.to_path_buf()))
-        }
-    } else {
+    if potential_path == PathBuf::from("") {
         let diary_path = opts.path.join("diary");
         if diary_path.exists() {
             return Err(DiaryError::ExistsHere);
         }
         Ok(InitStatus::UseOpt(diary_path))
+    } else if potential_path.exists() {
+        Err(DiaryError::ExistsElsewhere)
+    } else {
+        Ok(InitStatus::UseConfig(potential_path.to_path_buf()))
     }
 }
 

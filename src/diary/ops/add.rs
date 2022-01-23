@@ -63,9 +63,9 @@ pub fn add(
         Err(e) => return Err(e.into()), // uncovered.
     };
 
-    let content = string_getter("".to_string())?;
+    let content = string_getter("".to_owned())?;
 
-    let tag_result = opts.tag.map(|tag| diary.file_type().tag(tag.to_string()));
+    let tag_result = opts.tag.map(|tag| diary.file_type().tag(tag.to_owned()));
 
     add_content(file, content, tag_result)
 }

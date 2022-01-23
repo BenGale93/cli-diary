@@ -9,16 +9,16 @@ pub struct CliError {
 }
 
 impl CliError {
-    pub fn new(error: anyhow::Error, code: i32) -> CliError {
-        CliError {
+    pub fn new(error: anyhow::Error, code: i32) -> Self {
+        Self {
             error: Some(error),
             exit_code: code,
         }
     }
 
     // uncovered.
-    pub fn code(code: i32) -> CliError {
-        CliError {
+    pub fn code(code: i32) -> Self {
+        Self {
             error: None,
             exit_code: code,
         }
@@ -27,41 +27,41 @@ impl CliError {
 
 impl From<anyhow::Error> for CliError {
     // uncovered.
-    fn from(err: anyhow::Error) -> CliError {
-        CliError::new(err, 101)
+    fn from(err: anyhow::Error) -> Self {
+        Self::new(err, 101)
     }
 }
 
 impl From<clap::Error> for CliError {
     // uncovered.
-    fn from(err: clap::Error) -> CliError {
+    fn from(err: clap::Error) -> Self {
         let code = if err.use_stderr() { 1 } else { 0 };
-        CliError::new(err.into(), code)
+        Self::new(err.into(), code)
     }
 }
 
 impl From<confy::ConfyError> for CliError {
     // uncovered.
-    fn from(err: confy::ConfyError) -> CliError {
-        CliError::new(err.into(), 101)
+    fn from(err: confy::ConfyError) -> Self {
+        Self::new(err.into(), 101)
     }
 }
 impl From<DiaryError> for CliError {
     // uncovered.
-    fn from(err: DiaryError) -> CliError {
-        CliError::new(err.into(), 202)
+    fn from(err: DiaryError) -> Self {
+        Self::new(err.into(), 202)
     }
 }
 
 impl From<ParseError> for CliError {
-    fn from(err: ParseError) -> CliError {
-        CliError::new(err.into(), 101)
+    fn from(err: ParseError) -> Self {
+        Self::new(err.into(), 101)
     }
 }
 impl From<io::Error> for CliError {
     // uncovered.
-    fn from(err: io::Error) -> CliError {
-        CliError::new(err.into(), 1)
+    fn from(err: io::Error) -> Self {
+        Self::new(err.into(), 1)
     }
 }
 

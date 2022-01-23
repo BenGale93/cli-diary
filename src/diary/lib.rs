@@ -28,9 +28,9 @@ use crate::{
     utils::{date, file_system},
 };
 
-fn title_elements(date: &Date<Local>) -> (String, String, String) {
+fn title_elements(date: Date<Local>) -> (String, String, String) {
     let start_title = date.format("%A %-e").to_string();
-    let date_superscript = date::date_superscript(date.day()).to_string();
+    let date_superscript = date::date_superscript(date.day()).to_owned();
     let end_title = date.format("%B %Y").to_string();
 
     (start_title, date_superscript, end_title)
@@ -53,7 +53,7 @@ impl EntryContent for MarkdownDiary {
     }
 
     fn title(&self, date: &Date<Local>) -> String {
-        let (start_title, date_superscript, end_title) = title_elements(date);
+        let (start_title, date_superscript, end_title) = title_elements(*date);
 
         format!(
             "# {}<sup>{}</sup> {}\n\n",
@@ -73,7 +73,7 @@ impl EntryContent for RstDiary {
     }
 
     fn title(&self, date: &Date<Local>) -> String {
-        let (start_title, date_superscript, end_title) = title_elements(date);
+        let (start_title, date_superscript, end_title) = title_elements(*date);
 
         let first_line = format!(
             "{}\\ :sup:`{}` {}",
@@ -96,6 +96,7 @@ impl EntryContent for RstDiary {
 }
 
 #[enum_dispatch(EntryContent)]
+#[non_exhaustive]
 pub enum EntryFileType {
     MarkdownDiary,
     RstDiary,
@@ -136,14 +137,14 @@ impl Diary {
         }
         let entry_file_type = EntryFileType::from_str(file_type)?;
         Ok(Box::new(Self {
-            prefix: prefix.to_string(),
+            prefix: prefix.to_owned(),
             diary_path: diary_path.to_path_buf(),
             file_type: entry_file_type,
         }))
     }
 
     pub fn from_config(cfg: &Config) -> Result<Box<Self>, DiaryError> {
-        Diary::new(cfg.prefix(), cfg.diary_path(), cfg.file_type())
+        Self::new(cfg.prefix(), cfg.diary_path(), cfg.file_type())
     }
 
     pub fn prefix(&self) -> &String {

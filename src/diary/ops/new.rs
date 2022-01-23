@@ -57,7 +57,7 @@ pub fn new(
         Err(e) => return Err(e.into()),
     };
     if opts.open {
-        let contents = string_getter("".to_string())?;
+        let contents = string_getter("".to_owned())?;
         editing::add_user_content_to_file(&mut file, contents)?;
     };
     Ok(())

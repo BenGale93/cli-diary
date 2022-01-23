@@ -19,13 +19,12 @@ pub fn commit(opts: &CommitOptions, diary: &Diary) -> Result<(), DiaryError> {
     git::add_and_commit(&repo, &relative_path, &opts.message)?;
 
     if opts.push {
-        git::push_to_origin(&repo)?
-    };
+        git::push_to_origin(&repo)?;
+    }
     Ok(())
 }
 
 #[cfg(test)]
-
 mod test {
     use chrono::prelude::*;
     use git2::Repository;
