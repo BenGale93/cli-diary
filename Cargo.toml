@@ -30,7 +30,7 @@ serde_derive = "1.0.136"
 serde = "1.0.136"
 thiserror = "1.0.30"
 git2 = "0.13.25"
-enum_dispatch = "0.3.7"
+enum_dispatch = "0.3.8"
 pathdiff = "0.2.1"
 
 [dev-dependencies]
