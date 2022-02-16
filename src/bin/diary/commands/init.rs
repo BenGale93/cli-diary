@@ -1,15 +1,15 @@
 extern crate clap;
 use std::{fs::canonicalize, path::PathBuf};
 
-use clap::{App, Arg, ArgMatches, Error, ErrorKind};
+use clap::{Arg, ArgMatches, Command, Error, ErrorKind};
 use diary::{
     config::{Config, ConfigManager},
     ops::{init, InitOptions},
     process_file_type, CliResult,
 };
 
-pub fn cli() -> App<'static> {
-    App::new("init")
+pub fn cli() -> Command<'static> {
+    Command::new("init")
         .about("Create a new diary folder and config file.")
         .arg(
             Arg::new("path")

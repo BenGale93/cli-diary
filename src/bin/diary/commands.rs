@@ -1,7 +1,7 @@
-use clap::{App, ArgMatches};
+use clap::{ArgMatches, Command};
 use diary::config::ConfigManager;
 
-pub fn builtin() -> Vec<App<'static>> {
+pub fn builtin() -> Vec<Command<'static>> {
     vec![
         init::cli(),
         new::cli(),

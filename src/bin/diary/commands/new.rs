@@ -1,14 +1,14 @@
 extern crate clap;
 use chrono::Local;
-use clap::{App, Arg, ArgMatches};
+use clap::{Arg, ArgMatches, Command};
 use diary::{
     config::ConfigManager,
     ops::new::{new, NewOptions},
     CliResult, Diary,
 };
 
-pub fn cli() -> App<'static> {
-    App::new("new")
+pub fn cli() -> Command<'static> {
+    Command::new("new")
         .about("Create a new diary entry for today.")
         .arg(
             Arg::new("open")

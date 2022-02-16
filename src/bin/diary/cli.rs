@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use clap::{App, Arg, ArgMatches};
+use clap::{Arg, ArgMatches, Command};
 use diary::{config, errors, CliResult};
 
 use crate::commands;
@@ -26,8 +26,8 @@ pub fn main() -> CliResult {
     execute_subcommand(config_manager, cmd, subcommand_args)
 }
 
-fn cli() -> App<'static> {
-    App::new("diary")
+fn cli() -> Command<'static> {
+    Command::new("diary")
         .version(env!("CARGO_PKG_VERSION"))
         .arg(
             Arg::new("config")

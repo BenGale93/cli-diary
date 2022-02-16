@@ -1,15 +1,15 @@
 use std::str::FromStr;
 
 use chrono::{Local, NaiveDate, ParseError, TimeZone};
-use clap::{App, Arg, ArgMatches};
+use clap::{Arg, ArgMatches, Command};
 use diary::{
     config::ConfigManager,
     ops::commit::{commit, CommitOptions},
     CliResult, Diary,
 };
 
-pub fn cli() -> App<'static> {
-    App::new("commit")
+pub fn cli() -> Command<'static> {
+    Command::new("commit")
         .about("Commit an entry to git repo. Defaults to today's.")
         .arg(
             Arg::new("date")

@@ -1,15 +1,15 @@
 use std::str::FromStr;
 
 use chrono::{Local, NaiveDate, ParseError, TimeZone};
-use clap::{App, Arg, ArgMatches};
+use clap::{Arg, ArgMatches, Command};
 use diary::{
     config::ConfigManager,
     ops::open::{open, OpenFileOptions},
     CliResult, Diary,
 };
 
-pub fn cli() -> App<'static> {
-    App::new("open")
+pub fn cli() -> Command<'static> {
+    Command::new("open")
         .about("Open a specific diary entry. Defaults to today's.")
         .arg(
             Arg::new("date")

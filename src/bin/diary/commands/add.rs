@@ -1,13 +1,13 @@
 use chrono::Local;
-use clap::{App, Arg, ArgMatches};
+use clap::{Arg, ArgMatches, Command};
 use diary::{
     config::ConfigManager,
     ops::add::{add, AddOptions},
     CliResult, Diary,
 };
 
-pub fn cli() -> App<'static> {
-    App::new("add")
+pub fn cli() -> Command<'static> {
+    Command::new("add")
         .about("Add a new sub-entry to today's diary.")
         .arg(
             Arg::new("tag")
