@@ -105,6 +105,7 @@ mod test {
         let content = fs::read_to_string(entry_path).unwrap();
 
         assert!(content.contains("Test content"));
+        assert!(!content.contains("\n\n\n"))
     }
 
     #[test]

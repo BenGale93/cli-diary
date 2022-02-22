@@ -7,8 +7,7 @@ use crate::errors::DiaryError;
 
 pub type StringGetter = fn(S: String) -> io::Result<String>;
 
-pub fn add_user_content_to_file(file: &mut File, mut content: String) -> Result<(), DiaryError> {
-    content.push('\n');
+pub fn add_user_content_to_file(file: &mut File, content: String) -> Result<(), DiaryError> {
     file.write_all(content.as_bytes())?;
     Ok(())
 }
