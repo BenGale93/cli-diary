@@ -21,7 +21,7 @@ name = "diary"
 path = "src/diary/lib.rs"
 
 [dependencies]
-clap = "3.2.2"
+clap = "3.2.4"
 chrono = "0.4.19"
 edit = "0.1.4"
 anyhow = "1.0.57"
