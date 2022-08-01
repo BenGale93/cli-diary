@@ -29,7 +29,7 @@ confy = "0.4.0"
 serde_derive = "1.0.140"
 serde = "1.0.140"
 thiserror = "1.0.31"
-git2 = "0.14.4"
+git2 = "0.15.0"
 enum_dispatch = "0.3.8"
 pathdiff = "0.2.1"
 
