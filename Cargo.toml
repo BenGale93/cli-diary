@@ -22,7 +22,7 @@ path = "src/diary/lib.rs"
 
 [dependencies]
 clap = "3.2.17"
-chrono = "0.4.19"
+chrono = "0.4.22"
 edit = "0.1.4"
 anyhow = "1.0.62"
 confy = "0.4.0"
