@@ -1,3 +1,4 @@
+#![allow(clippy::missing_const_for_fn)]
 use std::path::PathBuf;
 
 pub struct ConfigBuilder {
@@ -58,15 +59,15 @@ impl Config {
         ConfigBuilder::new()
     }
 
-    pub fn diary_path(&self) -> &PathBuf {
+    pub const fn diary_path(&self) -> &PathBuf {
         &self.diary_path
     }
 
-    pub fn prefix(&self) -> &String {
+    pub const fn prefix(&self) -> &String {
         &self.prefix
     }
 
-    pub fn file_type(&self) -> &String {
+    pub const fn file_type(&self) -> &String {
         &self.file_type
     }
 }
@@ -85,11 +86,11 @@ pub struct ConfigManager {
 }
 
 impl ConfigManager {
-    pub fn location(&self) -> &Option<PathBuf> {
+    pub const fn location(&self) -> &Option<PathBuf> {
         &self.location
     }
 
-    pub fn config(&self) -> &Config {
+    pub const fn config(&self) -> &Config {
         &self.config
     }
 

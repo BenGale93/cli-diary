@@ -46,8 +46,8 @@ fn execute_subcommand(
     subcommand_args: &ArgMatches,
 ) -> CliResult {
     let exec_opt = commands::builtin_exec(cmd);
-    match exec_opt {
-        Some(exec) => exec(config_manager, subcommand_args),
-        None => Err(errors::CliError::code(1)), // uncovered.
-    }
+    exec_opt.map_or_else(
+        || Err(errors::CliError::code(1)),
+        |exec| exec(config_manager, subcommand_args),
+    )
 }

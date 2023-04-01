@@ -3,7 +3,7 @@ use std::str::FromStr;
 use chrono::{DateTime, Local, NaiveDate, ParseError, TimeZone};
 use clap::ArgMatches;
 
-pub fn date_superscript(day: u32) -> &'static str {
+pub const fn date_superscript(day: u32) -> &'static str {
     let unit = day % 10;
 
     match unit {

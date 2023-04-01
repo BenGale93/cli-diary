@@ -39,7 +39,7 @@ fn args_to_commit_opts(args: &ArgMatches) -> Result<CommitOptions, ParseError> {
     let message = args
         .get_one::<String>("message")
         .cloned()
-        .unwrap_or("Added an entry.".to_owned());
+        .unwrap_or_else(|| "Added an entry.".to_owned());
     let push = args.get_flag("push");
     Ok(CommitOptions {
         entry_date,
