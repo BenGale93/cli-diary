@@ -1,4 +1,5 @@
 #![doc = include_str!("../../README.md")]
+#![warn(clippy::all, clippy::nursery)]
 extern crate confy;
 
 #[macro_use]
@@ -115,13 +116,13 @@ impl FromStr for EntryFileType {
 }
 
 pub fn process_file_type(potential_file_type: Option<&str>) -> Result<Option<&str>, DiaryError> {
-    match potential_file_type {
-        None => Ok(None),
-        Some(file_type) => match EntryFileType::from_str(file_type) {
+    potential_file_type.map_or_else(
+        || Ok(None),
+        |file_type| match EntryFileType::from_str(file_type) {
             Err(_) => Err(DiaryError::BadFileType),
             Ok(_) => Ok(Some(file_type)),
         },
-    }
+    )
 }
 
 pub struct Diary {
@@ -147,13 +148,13 @@ impl Diary {
         Self::new(cfg.prefix(), cfg.diary_path(), cfg.file_type())
     }
 
-    pub fn prefix(&self) -> &String {
+    pub const fn prefix(&self) -> &String {
         &self.prefix
     }
-    pub fn diary_path(&self) -> &PathBuf {
+    pub const fn diary_path(&self) -> &PathBuf {
         &self.diary_path
     }
-    pub fn file_type(&self) -> &EntryFileType {
+    pub const fn file_type(&self) -> &EntryFileType {
         &self.file_type
     }
     pub fn file_name(&self, date: &DateTime<Local>) -> PathBuf {
@@ -188,7 +189,6 @@ mod tests {
     use crate::config::Config;
 
     #[test]
-
     fn get_extension() {
         let entry_file = EntryFileType::from_str("rst").unwrap();
 

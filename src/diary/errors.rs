@@ -17,7 +17,7 @@ impl CliError {
     }
 
     // uncovered.
-    pub fn code(code: i32) -> Self {
+    pub const fn code(code: i32) -> Self {
         Self {
             error: None,
             exit_code: code,
