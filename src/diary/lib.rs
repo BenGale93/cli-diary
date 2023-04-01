@@ -28,7 +28,7 @@ use crate::{
     utils::{date, file_system},
 };
 
-fn title_elements(date: Date<Local>) -> (String, String, String) {
+fn title_elements(date: DateTime<Local>) -> (String, String, String) {
     let start_title = date.format("%A %-e").to_string();
     let date_superscript = date::date_superscript(date.day()).to_owned();
     let end_title = date.format("%B %Y").to_string();
@@ -40,7 +40,7 @@ fn title_elements(date: Date<Local>) -> (String, String, String) {
 pub trait EntryContent {
     fn extension(&self) -> &'static str;
 
-    fn title(&self, date: &Date<Local>) -> String;
+    fn title(&self, date: &DateTime<Local>) -> String;
 
     fn tag(&self, tag_name: String) -> String;
 }
@@ -52,7 +52,7 @@ impl EntryContent for MarkdownDiary {
         "md"
     }
 
-    fn title(&self, date: &Date<Local>) -> String {
+    fn title(&self, date: &DateTime<Local>) -> String {
         let (start_title, date_superscript, end_title) = title_elements(*date);
 
         format!(
@@ -72,7 +72,7 @@ impl EntryContent for RstDiary {
         "rst"
     }
 
-    fn title(&self, date: &Date<Local>) -> String {
+    fn title(&self, date: &DateTime<Local>) -> String {
         let (start_title, date_superscript, end_title) = title_elements(*date);
 
         let first_line = format!(
@@ -156,7 +156,7 @@ impl Diary {
     pub fn file_type(&self) -> &EntryFileType {
         &self.file_type
     }
-    pub fn file_name(&self, date: &Date<Local>) -> PathBuf {
+    pub fn file_name(&self, date: &DateTime<Local>) -> PathBuf {
         let entry_suffix = date.format("%Y-%m-%d").to_string();
         let file_name = format!(
             "{}_{}.{}",
@@ -166,13 +166,13 @@ impl Diary {
         );
         PathBuf::from(file_name)
     }
-    pub fn get_entry_path(&self, date: &Date<Local>) -> PathBuf {
+    pub fn get_entry_path(&self, date: &DateTime<Local>) -> PathBuf {
         let mut entry_path = file_system::month_folder(self.diary_path(), date);
         let entry_name = self.file_name(date);
         entry_path.push(entry_name);
         entry_path
     }
-    pub fn get_entry_file(&self, date: &Date<Local>) -> io::Result<File> {
+    pub fn get_entry_file(&self, date: &DateTime<Local>) -> io::Result<File> {
         let entry_path = self.get_entry_path(date);
         return OpenOptions::new().append(true).open(entry_path);
     }
@@ -208,7 +208,7 @@ mod tests {
     #[test]
     fn rst_title() {
         let entry_file = RstDiary {};
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
 
         let actual_header = entry_file.title(&entry_date);
 
@@ -232,7 +232,7 @@ mod tests {
     #[test]
     fn md_title() {
         let entry_file = MarkdownDiary {};
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
 
         let actual_header = entry_file.title(&entry_date);
 

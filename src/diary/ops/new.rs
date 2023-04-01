@@ -35,7 +35,7 @@ pub struct NewOptions {
 pub fn new(
     opts: &NewOptions,
     diary: &Diary,
-    date: &Date<Local>,
+    date: &DateTime<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
     let mut new_entry_path = file_system::month_folder(diary.diary_path(), date);
@@ -80,7 +80,7 @@ mod test {
         let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
-        let date = Local.ymd(2021, 11, 6);
+        let date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
 
         new(&new_opts, &diary, &date, test_string_getter).unwrap();
 
@@ -95,7 +95,7 @@ mod test {
         let config = testing::temp_config();
         let diary = Diary::from_config(&config).unwrap();
 
-        let date = Local.ymd(2021, 11, 6);
+        let date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
         let new_opts = NewOptions { open: false };
 
         new(&new_opts, &diary, &date, test_string_getter).unwrap();
@@ -109,7 +109,7 @@ mod test {
         let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
-        let date = Local.ymd(2021, 11, 6);
+        let date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
 
         new(&new_opts, &diary, &date, test_string_getter).unwrap();
         new(&new_opts, &diary, &date, test_string_getter).unwrap();
@@ -122,7 +122,7 @@ mod test {
         let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
-        let date = Local.ymd(2021, 11, 6);
+        let date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
 
         new(&new_opts, &diary, &date, test_string_getter).unwrap();
     }
@@ -134,7 +134,7 @@ mod test {
         let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: true };
-        let date = Local.ymd(2021, 11, 6);
+        let date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
 
         new(&new_opts, &diary, &date, test_string_getter).unwrap();
 

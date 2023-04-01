@@ -1,14 +1,13 @@
-use std::str::FromStr;
-
-use chrono::{Local, NaiveDate, ParseError, TimeZone};
+use chrono::ParseError;
 use clap::{Arg, ArgMatches, Command};
 use diary::{
     config::ConfigManager,
     ops::commit::{commit, CommitOptions},
+    utils::date::parse_date_option,
     CliResult, Diary,
 };
 
-pub fn cli() -> Command<'static> {
+pub fn cli() -> Command {
     Command::new("commit")
         .about("Commit an entry to git repo. Defaults to today's.")
         .arg(
@@ -30,24 +29,21 @@ pub fn cli() -> Command<'static> {
                 .long("push")
                 .short('p')
                 .required(false)
-                .takes_value(false)
+                .num_args(0)
                 .help("Whether or not to immediately push the commit."),
         )
 }
 
 fn args_to_commit_opts(args: &ArgMatches) -> Result<CommitOptions, ParseError> {
-    let entry_date = match args.value_of("date") {
-        Some(val) => {
-            let date = NaiveDate::from_str(val)?;
-            Local.from_utc_date(&date)
-        }
-        _ => Local::today(),
-    };
-    let message = args.value_of("message").unwrap_or("Added an entry.");
-    let push = args.is_present("push");
+    let entry_date = parse_date_option(args)?;
+    let message = args
+        .get_one::<String>("message")
+        .cloned()
+        .unwrap_or("Added an entry.".to_owned());
+    let push = args.get_flag("push");
     Ok(CommitOptions {
         entry_date,
-        message: message.to_owned(),
+        message,
         push,
     })
 }

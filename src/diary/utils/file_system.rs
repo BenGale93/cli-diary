@@ -3,11 +3,11 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use chrono::{Date, Local};
+use chrono::{DateTime, Local};
 
 use crate::errors::DiaryError;
 
-pub fn month_folder(path_root: &Path, date: &Date<Local>) -> PathBuf {
+pub fn month_folder(path_root: &Path, date: &DateTime<Local>) -> PathBuf {
     let month_folder = PathBuf::from(date.format("%Y-%m").to_string());
     [path_root, &month_folder].iter().collect()
 }
@@ -16,7 +16,7 @@ pub fn create_month_folder(path: &Path) -> Result<(), DiaryError> {
     if path.exists() {
         Ok(())
     } else {
-        match create_dir(&path) {
+        match create_dir(path) {
             Ok(_) => Ok(()),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
                 Err(DiaryError::UnInitialised { source: Some(e) })

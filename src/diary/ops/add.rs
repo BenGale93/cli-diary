@@ -9,9 +9,9 @@ use chrono::prelude::*;
 use crate::{errors::DiaryError, utils::editing, Diary, EntryContent};
 
 /// The options available to the add command.
-pub struct AddOptions<'a> {
+pub struct AddOptions {
     /// An optional entry tag.
-    pub tag: Option<&'a str>,
+    pub tag: Option<String>,
 }
 
 /// Adds the given content to a file.
@@ -52,7 +52,7 @@ fn add_content(mut file: File, content: String, tag: Option<String>) -> Result<(
 pub fn add(
     opts: &AddOptions,
     diary: &Diary,
-    date: &Date<Local>,
+    date: &DateTime<Local>,
     string_getter: editing::StringGetter,
 ) -> Result<(), DiaryError> {
     let file = match diary.get_entry_file(date) {
@@ -65,7 +65,10 @@ pub fn add(
 
     let content = string_getter("".to_owned())?;
 
-    let tag_result = opts.tag.map(|tag| diary.file_type().tag(tag.to_owned()));
+    let tag_result = opts
+        .tag
+        .as_ref()
+        .map(|tag| diary.file_type().tag(tag.to_string()));
 
     add_content(file, content, tag_result)
 }
@@ -90,7 +93,7 @@ mod test {
 
         testing::default_init(config.diary_path());
 
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
         testing::new_entry(&config, &entry_date);
 
         let diary = Diary::from_config(&config).unwrap();
@@ -113,11 +116,13 @@ mod test {
         let config = testing::temp_config();
         testing::default_init(config.diary_path());
 
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
         testing::new_entry(&config, &entry_date);
 
         let diary = Diary::from_config(&config).unwrap();
-        let opts = AddOptions { tag: Some("Tag") };
+        let opts = AddOptions {
+            tag: Some("Tag".to_owned()),
+        };
         add(&opts, &diary, &entry_date, test_string_getter).unwrap();
 
         let entry_path = diary.get_entry_path(&entry_date);
@@ -134,11 +139,13 @@ mod test {
         let config = testing::temp_config();
         testing::default_init(config.diary_path());
 
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
         testing::new_entry(&config, &entry_date);
 
         let diary = Diary::from_config(&config).unwrap();
-        let opts = AddOptions { tag: Some("Tag") };
+        let opts = AddOptions {
+            tag: Some("Tag".to_owned()),
+        };
         add(&opts, &diary, &entry_date, test_empty_string_getter).unwrap();
     }
 
@@ -150,8 +157,10 @@ mod test {
 
         let diary = Diary::from_config(&config).unwrap();
 
-        let entry_date = Local.ymd(2021, 11, 6);
-        let opts = AddOptions { tag: Some("Tag") };
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
+        let opts = AddOptions {
+            tag: Some("Tag".to_owned()),
+        };
         add(&opts, &diary, &entry_date, test_string_getter).unwrap();
     }
 }

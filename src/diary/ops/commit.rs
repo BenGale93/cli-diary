@@ -5,14 +5,14 @@ use pathdiff;
 use crate::{errors::DiaryError, utils::git, Diary};
 pub struct CommitOptions {
     /// The date of the entry to open.
-    pub entry_date: Date<Local>,
+    pub entry_date: DateTime<Local>,
     pub message: String,
     pub push: bool,
 }
 
 pub fn commit(opts: &CommitOptions, diary: &Diary) -> Result<(), DiaryError> {
     let entry_path = diary.get_entry_path(&opts.entry_date);
-    let relative_path = pathdiff::diff_paths(&entry_path, diary.diary_path()).unwrap();
+    let relative_path = pathdiff::diff_paths(entry_path, diary.diary_path()).unwrap();
 
     let repo = Repository::open(diary.diary_path())?;
 
@@ -47,7 +47,7 @@ mod test {
         };
         init(&init_opts, config.diary_path()).unwrap();
 
-        let entry_date = Local.ymd(2022, 1, 13);
+        let entry_date = Local.with_ymd_and_hms(2022, 1, 13, 0, 0, 0).unwrap();
         testing::new_entry(&config, &entry_date);
 
         let opts = CommitOptions {
@@ -79,7 +79,7 @@ mod test {
         };
         init(&init_opts, config.diary_path()).unwrap();
 
-        let entry_date = Local.ymd(2022, 1, 13);
+        let entry_date = Local.with_ymd_and_hms(2022, 1, 13, 0, 0, 0).unwrap();
         testing::new_entry(&config, &entry_date);
 
         let opts = CommitOptions {
@@ -95,7 +95,7 @@ mod test {
         let last_commit = git::find_last_commit(&repo).unwrap();
         assert!(last_commit.is_some());
 
-        let entry_date = Local.ymd(2022, 1, 14);
+        let entry_date = Local.with_ymd_and_hms(2022, 1, 14, 0, 0, 0).unwrap();
         testing::new_entry(&config, &entry_date);
 
         let opts = CommitOptions {
@@ -126,7 +126,7 @@ mod test {
         };
         init(&init_opts, config.diary_path()).unwrap();
 
-        let entry_date = Local.ymd(2022, 1, 13);
+        let entry_date = Local.with_ymd_and_hms(2022, 1, 13, 0, 0, 0).unwrap();
 
         let opts = CommitOptions {
             entry_date,
@@ -150,7 +150,7 @@ mod test {
         };
         init(&init_opts, config.diary_path()).unwrap();
 
-        let entry_date = Local.ymd(2022, 1, 13);
+        let entry_date = Local.with_ymd_and_hms(2022, 1, 13, 0, 0, 0).unwrap();
 
         testing::new_entry(&config, &entry_date);
 

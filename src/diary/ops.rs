@@ -34,7 +34,7 @@ pub mod testing {
         Config::builder().diary_path(diary_dir).build()
     }
 
-    pub fn new_entry(config: &Config, entry_date: &Date<Local>) {
+    pub fn new_entry(config: &Config, entry_date: &DateTime<Local>) {
         let new_opts = NewOptions { open: false };
         let diary = Diary::from_config(config).unwrap();
         new(&new_opts, &diary, entry_date, test_string_getter).unwrap();

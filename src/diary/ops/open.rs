@@ -12,7 +12,7 @@ use crate::{errors::DiaryError, Diary};
 /// The options available to the open command.
 pub struct OpenFileOptions {
     /// The date of the entry to open.
-    pub entry_date: Date<Local>,
+    pub entry_date: DateTime<Local>,
 }
 
 /// Opens a specific diary entry for editing.
@@ -78,7 +78,7 @@ mod test {
         let diary = Diary::from_config(&config).unwrap();
 
         let new_opts = NewOptions { open: false };
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
 
         new(&new_opts, &diary, &entry_date, test_string_getter).unwrap();
 
@@ -99,7 +99,7 @@ mod test {
         testing::default_init(config.diary_path());
         let diary = Diary::from_config(&config).unwrap();
 
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
         let opts = OpenFileOptions { entry_date };
 
         open(&opts, &diary, test_user_input).unwrap();
@@ -111,7 +111,7 @@ mod test {
         let config = Config::default();
         let diary = Diary::from_config(&config).unwrap();
 
-        let entry_date = Local.ymd(2021, 11, 6);
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
         let opts = OpenFileOptions { entry_date };
 
         open(&opts, &diary, test_user_input).unwrap();
