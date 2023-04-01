@@ -6,7 +6,7 @@ use diary::{
     CliResult, Diary,
 };
 
-pub fn cli() -> Command<'static> {
+pub fn cli() -> Command {
     Command::new("add")
         .about("Add a new sub-entry to today's diary.")
         .arg(
@@ -19,13 +19,13 @@ pub fn cli() -> Command<'static> {
 }
 
 fn args_to_add_opts(args: &ArgMatches) -> AddOptions {
-    let tag = args.value_of("tag");
+    let tag = args.get_one::<String>("tag").cloned();
     AddOptions { tag }
 }
 
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
     let opts = args_to_add_opts(args);
-    let date = Local::today();
+    let date = Local::now();
     let diary = Diary::from_config(config_manager.config())?;
     add(&opts, &diary, &date, edit::edit)?;
     println!("Added content."); //uncovered.

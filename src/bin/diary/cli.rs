@@ -11,7 +11,7 @@ pub fn main() -> CliResult {
         Err(e) => e.exit(),
     };
 
-    let config_value = args.value_of("config").map(PathBuf::from);
+    let config_value = args.get_one::<String>("config").map(PathBuf::from);
 
     let config_manager = config::ConfigManager::with_location(config_value).read()?;
 
@@ -26,7 +26,7 @@ pub fn main() -> CliResult {
     execute_subcommand(config_manager, cmd, subcommand_args)
 }
 
-fn cli() -> Command<'static> {
+fn cli() -> Command {
     Command::new("diary")
         .version(env!("CARGO_PKG_VERSION"))
         .arg(
@@ -35,7 +35,7 @@ fn cli() -> Command<'static> {
                 .long("config")
                 .value_name("FILE")
                 .help("Sets a custom config file")
-                .takes_value(true),
+                .num_args(1),
         )
         .subcommands(commands::builtin())
 }

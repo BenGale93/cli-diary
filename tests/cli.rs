@@ -35,7 +35,7 @@ fn test_bad_command() -> utils::TestReturn {
     cmd.arg("fake");
     cmd.assert()
         .failure()
-        .stderr(predicate::str::contains("wasn't expected"));
+        .stderr(predicate::str::contains("unrecognized subcommand 'fake'"));
 
     Ok(())
 }

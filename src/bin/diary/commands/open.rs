@@ -1,14 +1,13 @@
-use std::str::FromStr;
-
-use chrono::{Local, NaiveDate, ParseError, TimeZone};
+use chrono::ParseError;
 use clap::{Arg, ArgMatches, Command};
 use diary::{
     config::ConfigManager,
     ops::open::{open, OpenFileOptions},
+    utils::date::parse_date_option,
     CliResult, Diary,
 };
 
-pub fn cli() -> Command<'static> {
+pub fn cli() -> Command {
     Command::new("open")
         .about("Open a specific diary entry. Defaults to today's.")
         .arg(
@@ -21,13 +20,7 @@ pub fn cli() -> Command<'static> {
 }
 
 fn args_to_open_opts(args: &ArgMatches) -> Result<OpenFileOptions, ParseError> {
-    let entry_date = match args.value_of("date") {
-        Some(val) => {
-            let date = NaiveDate::from_str(val)?;
-            Local.from_utc_date(&date)
-        }
-        _ => Local::today(),
-    };
+    let entry_date = parse_date_option(args)?;
     Ok(OpenFileOptions { entry_date })
 }
 
@@ -41,8 +34,6 @@ pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
 
 #[cfg(test)]
 mod test {
-    use std::str::FromStr;
-
     use chrono::{Local, NaiveDate, TimeZone};
 
     use super::{args_to_open_opts, cli};
@@ -59,7 +50,12 @@ mod test {
 
         assert!(
             open_options.entry_date
-                == Local.from_utc_date(&NaiveDate::from_str("2022-01-01").unwrap())
+                == Local.from_utc_datetime(
+                    &NaiveDate::from_ymd_opt(2022, 1, 1)
+                        .unwrap()
+                        .and_hms_opt(0, 0, 0)
+                        .unwrap()
+                )
         )
     }
 }

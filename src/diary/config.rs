@@ -103,7 +103,7 @@ impl ConfigManager {
     pub fn read(mut self) -> Result<Self, confy::ConfyError> {
         let config: Config = match &self.location {
             Some(l) => confy::load_path(l)?,
-            _ => confy::load("diary")?,
+            _ => confy::load("diary", None)?,
         };
         self.config = config;
 
@@ -113,7 +113,7 @@ impl ConfigManager {
     pub fn write(self) -> Result<(), confy::ConfyError> {
         match self.location {
             Some(l) => confy::store_path(l, self.config),
-            _ => confy::store("diary", self.config), // uncovered.
+            _ => confy::store("diary", None, self.config), // uncovered.
         }
     }
 

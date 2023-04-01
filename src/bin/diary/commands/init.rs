@@ -1,14 +1,14 @@
 extern crate clap;
 use std::{fs::canonicalize, path::PathBuf};
 
-use clap::{Arg, ArgMatches, Command, Error, ErrorKind};
+use clap::{error::ErrorKind, Arg, ArgMatches, Command, Error};
 use diary::{
     config::{Config, ConfigManager},
     ops::{init, InitOptions},
     process_file_type, CliResult,
 };
 
-pub fn cli() -> Command<'static> {
+pub fn cli() -> Command {
     Command::new("init")
         .about("Create a new diary folder and config file.")
         .arg(
@@ -21,25 +21,25 @@ pub fn cli() -> Command<'static> {
                 .long("repo")
                 .short('r')
                 .required(false)
-                .takes_value(false)
+                .num_args(0)
                 .help("Whether or not to initialise a git repo in the diary folder."),
         )
         .arg(
             Arg::new("prefix")
                 .long("prefix")
-                .takes_value(true)
+                .num_args(1)
                 .help("Sets the diary files name prefix."),
         )
         .arg(
             Arg::new("filetype")
                 .long("filetype")
-                .takes_value(true)
+                .num_args(1)
                 .help("Sets the file type to use for diary entries."),
         )
 }
 
 fn args_to_init_ops(args: &ArgMatches) -> Result<init::InitOptions, Error> {
-    let diary_path = match args.value_of("path") {
+    let diary_path = match args.get_one::<String>("path") {
         Some(path) => PathBuf::from(path),
         None => {
             return Err(Error::raw(
@@ -48,9 +48,9 @@ fn args_to_init_ops(args: &ArgMatches) -> Result<init::InitOptions, Error> {
             )); // uncovered.
         }
     };
-    let diary_prefix = args.value_of("prefix").map(String::from);
+    let diary_prefix = args.get_one::<String>("prefix").cloned();
 
-    let git_repo = args.is_present("repo");
+    let git_repo = args.get_flag("repo");
 
     Ok(InitOptions {
         path: diary_path,
@@ -81,7 +81,8 @@ fn build_new_config(
 }
 
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
-    let processed_file_type = process_file_type(args.value_of("filetype"))?;
+    let processed_file_type =
+        process_file_type(args.get_one::<String>("filetype").map(|x| x.as_str()))?;
 
     let opts = args_to_init_ops(args)?;
     let path = init::init(&opts, config_manager.config().diary_path())?;

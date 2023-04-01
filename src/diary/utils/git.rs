@@ -61,7 +61,7 @@ mod test {
     fn no_commit() {
         let dir = testing::temp_path();
 
-        let repo = Repository::init(&dir).unwrap();
+        let repo = Repository::init(dir).unwrap();
 
         let last_commit = find_last_commit(&repo).unwrap();
 

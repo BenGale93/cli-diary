@@ -1,3 +1,8 @@
+use std::str::FromStr;
+
+use chrono::{DateTime, Local, NaiveDate, ParseError, TimeZone};
+use clap::ArgMatches;
+
 pub fn date_superscript(day: u32) -> &'static str {
     let unit = day % 10;
 
@@ -7,6 +12,16 @@ pub fn date_superscript(day: u32) -> &'static str {
         3 => "rd",
         _ => "th",
     }
+}
+
+pub fn parse_date_option(args: &ArgMatches) -> Result<DateTime<Local>, ParseError> {
+    Ok(match args.get_one::<String>("date") {
+        Some(val) => {
+            let date = NaiveDate::from_str(val)?.and_hms_opt(0, 0, 0).unwrap();
+            Local.from_utc_datetime(&date)
+        }
+        _ => Local::now(),
+    })
 }
 
 #[cfg(test)]
