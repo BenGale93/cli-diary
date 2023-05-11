@@ -16,11 +16,23 @@ pub fn cli() -> Command {
                 .value_name("TAG")
                 .help("Add a tag above the entry text."),
         )
+        .arg(
+            Arg::new("content")
+                .num_args(0..)
+                .value_name("CONTENT")
+                .help("entry text"),
+        )
 }
 
 fn args_to_add_opts(args: &ArgMatches) -> AddOptions {
     let tag = args.get_one::<String>("tag").cloned();
-    AddOptions { tag }
+    let content = args.get_many::<String>("content").map(|values_ref| {
+        values_ref
+            .map(|s| s.to_string())
+            .collect::<Vec<String>>()
+            .join(" ")
+    });
+    AddOptions { tag, content }
 }
 
 pub fn exec(config_manager: ConfigManager, args: &ArgMatches) -> CliResult {
