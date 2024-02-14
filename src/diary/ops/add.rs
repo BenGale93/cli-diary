@@ -12,6 +12,8 @@ use crate::{errors::DiaryError, utils::editing, Diary, EntryContent};
 pub struct AddOptions {
     /// An optional entry tag.
     pub tag: Option<String>,
+    /// Optional adding contents.
+    pub content: Option<String>,
 }
 
 /// Adds the given content to a file.
@@ -63,7 +65,10 @@ pub fn add(
         Err(e) => return Err(e.into()), // uncovered.
     };
 
-    let content = string_getter("".to_owned())?;
+    let content = match &opts.content {
+        Some(content) => content.to_owned() + "\n",
+        None => string_getter("".to_owned())?,
+    };
 
     let tag_result = opts
         .tag
@@ -87,6 +92,33 @@ mod test {
         utils::editing::test::{test_empty_string_getter, test_string_getter},
         Diary,
     };
+
+    #[test]
+    fn quick_add() {
+        let config = testing::temp_config();
+
+        testing::default_init(config.diary_path());
+
+        let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
+        testing::new_entry(&config, &entry_date);
+
+        let diary = Diary::from_config(&config).unwrap();
+
+        let opts = AddOptions {
+            tag: None,
+            content: Some("testing quick add".to_owned()),
+        };
+        add(&opts, &diary, &entry_date, test_string_getter).unwrap();
+
+        let diary_file = Diary::from_config(&config).unwrap();
+
+        let entry_path = diary_file.get_entry_path(&entry_date);
+
+        let content = fs::read_to_string(entry_path).unwrap();
+
+        assert!(content.contains("testing quick add"));
+    }
+
     #[test]
     fn add_no_tag() {
         let config = testing::temp_config();
@@ -98,7 +130,10 @@ mod test {
 
         let diary = Diary::from_config(&config).unwrap();
 
-        let opts = AddOptions { tag: None };
+        let opts = AddOptions {
+            tag: None,
+            content: None,
+        };
         add(&opts, &diary, &entry_date, test_string_getter).unwrap();
 
         let diary_file = Diary::from_config(&config).unwrap();
@@ -122,6 +157,7 @@ mod test {
         let diary = Diary::from_config(&config).unwrap();
         let opts = AddOptions {
             tag: Some("Tag".to_owned()),
+            content: None,
         };
         add(&opts, &diary, &entry_date, test_string_getter).unwrap();
 
@@ -145,6 +181,7 @@ mod test {
         let diary = Diary::from_config(&config).unwrap();
         let opts = AddOptions {
             tag: Some("Tag".to_owned()),
+            content: None,
         };
         add(&opts, &diary, &entry_date, test_empty_string_getter).unwrap();
     }
@@ -160,6 +197,7 @@ mod test {
         let entry_date = Local.with_ymd_and_hms(2021, 11, 6, 0, 0, 0).unwrap();
         let opts = AddOptions {
             tag: Some("Tag".to_owned()),
+            content: None,
         };
         add(&opts, &diary, &entry_date, test_string_getter).unwrap();
     }
